@@ -1,0 +1,114 @@
+@model Web.Models.engage.Result
+@{
+    ViewBag.Title = "Details";
+    Layout = "/Views/Shared/LightBox/Index.cshtml";
+    ViewBag.iFrame = true;
+}
+
+<div>
+    <!-- This is a single result -->
+    <div class="rowResultAuthor">
+        <a href="@Model.ApiResult.Author.URL" target="_blank">
+            <img src="@Model.ApiResult.Author.ImageURL" width="48" height="48" />
+        </a>
+        <ul>
+            @if (Model.ApiResult.RepostCount > 0)
+            {
+                <li class="AuthorDetails">
+                    <label>Retweets</label>
+                    <div class="AuthorDetailsValue">@Model.ApiResult.RepostCount</div>
+                </li>
+            }
+            @if (Model.ApiResult.ReplyCount > 0)
+            {
+                <li class="AuthorDetails">
+                    <label>Replies</label>
+                    <div class="AuthorDetailsValue">@Model.ApiResult.ReplyCount</div>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+<div class="rowResultContent">
+    <div class="resultAuthorName">
+        <a href="@Model.ApiResult.Author.URL" target="_blank">@Model.ApiResult.Author.Name</a>
+    </div>
+    <div class="resultMeat">@Html.Raw(Model.ApiResult.FormattedMessage)</div>
+    <div class="resultTimeStamp">Posted <strong>@Model.ApiResult.DatePosted</strong></div>
+</div>
+
+@if (Model.ApiResult.ReplyCount > 0)
+{
+    <div id="responses" class="replyTimeline">
+        @foreach (var t in Model.ApiResult.Timeline)
+        {
+        <div class="replyContent">
+            <div class="replyAuthor">
+                <a href="@t.Author.URL" target="_blank">
+                    <img src="@t.Author.ImageURL" width="48" height="48" />
+                </a>
+            </div>
+            <div class="replyAuthorName">
+                <a href="@t.Author.URL" target="_blank">@t.Author.Name</a>
+            </div>
+            <div class="replyMeat">@Html.Raw(t.FormattedMessage)</div>
+            <div class="replyTimeStamp">Posted <strong>@t.DatePosted</strong></div>
+        </div>
+        }
+    </div>
+    <div id="expander" style="text-align: center;">
+        <span class="conversation">
+            <a href="#" class="slide1">Expand</a></span>
+    </div>
+}
+<div class="rowResultActions">
+    <a class="link" href="@Model.URL" target="_blank">
+        <img src="/images/engage/actions/livelinkInactive.png" height="24" width="24" /></a>
+    <a class="favorite" href="@Url.RouteUrl("engage", new { action = "Favorite", controller = "Result", id = Model.engageResultID })">
+        <img src="/images/engage/actions/favoriteActive.png" /></a>
+</div>
+
+@{
+    if (@Model.ApiResult.Author.Name == @Model.QueryModel.SocialProfile.ScreenName)
+    {
+    <a class="hide" href="@Url.RouteUrl("engage", new { action = "Delete", controller = "Result", ID = Model.engageResultID })" data-colorbox="ajax" data-colorbox-height="240px" data-colorbox-width="520px">
+        <img src="/images/engage/actions/delete.png" /></a>
+    }
+}
+
+@section  Scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function ($)
+        {
+            $(function ()
+            {
+                toggle = function (id)
+                {
+                    if (document.getElementById(id).style.display == 'none')
+                    {
+                        document.getElementById(id).style.display = 'block';
+                    } else
+                    {
+                        document.getElementById(id).style.display = 'none';
+                    }
+                }
+            });
+
+            // Hide the "view" div.
+            $('#responses').hide();
+            // Watch for clicks on the "slide" link.
+            $('span.conversation').click(function ()
+            {
+                $('#responses').slideToggle(400, function ()
+                {
+                    if ($(this).is(":visible"))
+                        $('span.conversation > a').text('Collapse');
+                    else
+                        $('span.conversation > a').text('Expand');
+                });
+                return false;
+            });
+        });
+    </script>
+}
