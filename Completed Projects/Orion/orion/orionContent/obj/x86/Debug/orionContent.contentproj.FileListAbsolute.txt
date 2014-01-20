@@ -1,0 +1,9 @@
+C:\Users\Micah\Documents\Visual Studio 2010\Projects\orion\orion\orionContent\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\aaron\Downloads\Current Version\orion\orion\orionContent\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\aaron\Downloads\Current Version\Current Version\orion\orion\orionContent\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\aaron\Downloads\Current Version\Current Version\Current Version\orion\orion\orionContent\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\Micah\Documents\Visual Studio 2010\Projects\Current Version\Current Version\Current Version\Current Version\orion\orion\orionContent\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\RC 335G\Desktop\orion\orion\orionContent\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\Micah\Documents\Visual Studio 2010\Projects\orion-PC\orion\orionContent\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\Micah\Documents\Visual Studio 2010\Projects\Beta Version\orion\orionContent\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\aaron\Desktop\Projects\OrionProject\Versions\WorkingVersion\Beta Version - current\orion\orionContent\obj\x86\Debug\ResolveAssemblyReference.cache

@@ -1,0 +1,17 @@
+C:\Users\Rue\Desktop\Projects\SimpleEnrollmentSystem\SimpleEnrollmentSystem\bin\Debug\SimpleEnrollmentSystem.exe
+C:\Users\Rue\Desktop\Projects\SimpleEnrollmentSystem\SimpleEnrollmentSystem\bin\Debug\SimpleEnrollmentSystem.pdb
+C:\Users\Rue\Desktop\Projects\SimpleEnrollmentSystem\SimpleEnrollmentSystem\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\Rue\Desktop\Projects\SimpleEnrollmentSystem\SimpleEnrollmentSystem\obj\x86\Debug\SimpleEnrollmentSystem.Form1.resources
+C:\Users\Rue\Desktop\Projects\SimpleEnrollmentSystem\SimpleEnrollmentSystem\obj\x86\Debug\SimpleEnrollmentSystem.Properties.Resources.resources
+C:\Users\Rue\Desktop\Projects\SimpleEnrollmentSystem\SimpleEnrollmentSystem\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Users\Rue\Desktop\Projects\SimpleEnrollmentSystem\SimpleEnrollmentSystem\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Users\Rue\Desktop\Projects\SimpleEnrollmentSystem\SimpleEnrollmentSystem\obj\x86\Debug\SimpleEnrollmentSystem.exe
+C:\Users\Rue\Desktop\Projects\SimpleEnrollmentSystem\SimpleEnrollmentSystem\obj\x86\Debug\SimpleEnrollmentSystem.pdb
+C:\Users\micah\Downloads\SimpleEnrollmentSystemConnected\SimpleEnrollmentSystem\SimpleEnrollmentSystem\obj\x86\Debug\SimpleEnrollmentSystem.exe
+C:\Users\micah\Downloads\SimpleEnrollmentSystemConnected\SimpleEnrollmentSystem\SimpleEnrollmentSystem\obj\x86\Debug\SimpleEnrollmentSystem.pdb
+C:\Users\micah\Downloads\SimpleEnrollmentSystemConnected\SimpleEnrollmentSystem\SimpleEnrollmentSystem\bin\Debug\SimpleEnrollmentSystem.exe
+C:\Users\micah\Downloads\SimpleEnrollmentSystemConnected\SimpleEnrollmentSystem\SimpleEnrollmentSystem\bin\Debug\SimpleEnrollmentSystem.pdb
+C:\Users\micah\Downloads\SimpleEnrollmentSystemConnected\SimpleEnrollmentSystem\SimpleEnrollmentSystem\obj\x86\Debug\SimpleEnrollmentSystem.csprojResolveAssemblyReference.cache
+C:\Users\micah\Downloads\SimpleEnrollmentSystemConnected\SimpleEnrollmentSystem\SimpleEnrollmentSystem\obj\x86\Debug\SimpleEnrollmentSystem.Form1.resources
+C:\Users\micah\Downloads\SimpleEnrollmentSystemConnected\SimpleEnrollmentSystem\SimpleEnrollmentSystem\obj\x86\Debug\SimpleEnrollmentSystem.Properties.Resources.resources
+C:\Users\micah\Downloads\SimpleEnrollmentSystemConnected\SimpleEnrollmentSystem\SimpleEnrollmentSystem\obj\x86\Debug\SimpleEnrollmentSystem.csproj.GenerateResource.Cache

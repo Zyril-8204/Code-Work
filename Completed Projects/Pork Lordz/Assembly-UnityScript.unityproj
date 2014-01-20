@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+	<ProductVersion>10.0.20506</ProductVersion>
+	<SchemaVersion>2.0</SchemaVersion>
+	<ProjectGuid>{C092F0A8-AAE6-DBB0-8B7C-B1CF5321A709}</ProjectGuid>
+	<OutputType>Library</OutputType>
+	<AppDesignerFolder>Properties</AppDesignerFolder>
+	<RootNamespace></RootNamespace>
+	<AssemblyName>Assembly-UnityScript</AssemblyName>
+	<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+	<FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+	<DebugSymbols>true</DebugSymbols>
+	<DebugType>full</DebugType>
+	<Optimize>false</Optimize>
+	<OutputPath>Temp\bin\Debug\</OutputPath>
+	<DefineConstants>DEBUG;TRACE;UNITY_3_5_1;UNITY_3_5;UNITY_EDITOR;ENABLE_PROFILER;UNITY_STANDALONE_WIN;ENABLE_GENERICS;ENABLE_DUCK_TYPING;ENABLE_TERRAIN;ENABLE_MOVIES;ENABLE_WEBCAM;ENABLE_MICROPHONE;ENABLE_NETWORK;ENABLE_CLOTH;ENABLE_WWW;ENABLE_SUBSTANCE</DefineConstants>
+	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
+	<NoWarn>0169</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+	<DebugType>pdbonly</DebugType>
+	<Optimize>true</Optimize>
+	<OutputPath>Temp\bin\Release\</OutputPath>
+	<DefineConstants>TRACE</DefineConstants>
+	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
+	<NoWarn>0169</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+	<Reference Include="System" />
+    <Reference Include="System.XML" />
+	<Reference Include="System.Core" />
+	<Reference Include="UnityEngine">
+	  <HintPath>C:/Users/RC 335G/Desktop/Unity35/Editor/Data/Managed/UnityEngine.dll</HintPath>
+	</Reference>
+	<Reference Include="UnityEditor">
+	  <HintPath>C:/Users/RC 335G/Desktop/Unity35/Editor/Data/Managed/UnityEditor.dll</HintPath>
+	</Reference>
+  </ItemGroup>
+  <ItemGroup>
+     <Compile Include="Assets\Arachnoporkia\Scripts\Arachnoporkia.js" />
+     <Compile Include="Assets\Arachnoporkia\Scripts\SpiderBall.js" />
+     <Compile Include="Assets\Patrick\Bridge reactor.js" />
+     <Compile Include="Assets\Patrick\Elevator Prefab\PlatformMover.js" />
+     <Compile Include="Assets\Patrick\Magic Prefabs\Explosion.js" />
+     <Compile Include="Assets\Patrick\Sound and Music\Game music.js" />
+     <Compile Include="Assets\Patrick\Sound and Music\GameWonSound.js" />
+     <Compile Include="Assets\Patrick\reactor.js" />
+     <Compile Include="Assets\Patrick\switcher.js" />
+     <Compile Include="Assets\Scripts\Death_Script.js" />
+     <Compile Include="Assets\Scripts\Magic\FireLauncher.js" />
+     <Compile Include="Assets\Scripts\Magic\IceLauncher.js" />
+     <Compile Include="Assets\Scripts\Magic\LightningLauncher.js" />
+     <Compile Include="Assets\Scripts\Magic\MissleLauncher.js" />
+     <Compile Include="Assets\Scripts\Magic\Projectile.js" />
+     <Compile Include="Assets\Scripts\Node_Controller.js" />
+     <Compile Include="Assets\Scripts\PlayerTurn.js" />
+     <Compile Include="Assets\Scripts\Warp.js" />
+     <Compile Include="Assets\Scripts\enemyAI.js" />
+     <Compile Include="Assets\Scripts\gameplay\Swinging.js" />
+     <Compile Include="Assets\Scripts\gameplay\cameraOrient.js" />
+     <Compile Include="Assets\Scripts\gameplay\gameWonScreen\gameWonScript.js" />
+     <Compile Include="Assets\Scripts\gameplay\gameoverScreen\gameoverScript.js" />
+     <Compile Include="Assets\Scripts\gameplay\introScreen\creditFade.js" />
+     <Compile Include="Assets\Scripts\gameplay\introScreen\spalshFade.js" />
+     <Compile Include="Assets\Scripts\gameplay\obsticles\keyScript.js" />
+     <Compile Include="Assets\Scripts\gameplay\obsticles\platforms\platformFallingBridge.js" />
+     <Compile Include="Assets\Scripts\gameplay\obsticles\platforms\platformFallthrough.js" />
+     <Compile Include="Assets\Scripts\gameplay\obsticles\platforms\platformMoving.js" />
+     <Compile Include="Assets\Scripts\gameplay\obsticles\playerMovement2D_modified.js" />
+     <Compile Include="Assets\Scripts\gameplay\obsticles\playerMovement3D_modified.js" />
+     <Compile Include="Assets\Scripts\gameplay\obsticles\traps\axeSwing.js" />
+     <Compile Include="Assets\Scripts\gameplay\obsticles\traps\damageScript.js" />
+     <Compile Include="Assets\Scripts\gameplay\obsticles\traps\deathTrap.js" />
+     <Compile Include="Assets\Scripts\gameplay\obsticles\traps\fallingSpike.js" />
+     <Compile Include="Assets\Scripts\gameplay\obsticles\traps\fallingSpikeEnd.js" />
+     <Compile Include="Assets\Scripts\gameplay\playerMovement.js" />
+     <Compile Include="Assets\Scripts\gameplay\playerMovement2.js" />
+     <Compile Include="Assets\Scripts\gameplay\playerMovement2D.js" />
+     <Compile Include="Assets\Scripts\gameplay\playerMovement3D.js" />
+     <Compile Include="Assets\Scripts\menu system\PauseMenu2D.js" />
+     <Compile Include="Assets\Scripts\menu system\PauseMenu3D.js" />
+     <Compile Include="Assets\Scripts\menu system\statsMenu.js" />
+     <Compile Include="Assets\Scripts\playerhealth.js" />
+     <Compile Include="Assets\Weapons\TempEnemy.js" />
+     <Compile Include="Assets\Weapons\WeaponControl.js" />
+     <None Include="Assets\Standard Assets\Particles\Sources\Shaders\Particle Alpha Blend (Queue +100).shader" />
+     <None Include="Assets\Standard Assets\Water (Basic)\Sources\Shaders\FX-Water Simple.shader" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
+      <Project>{E32B9B9A-16D3-6CD9-C144-787DFB8AEC8B}</Project>      <Name>Assembly-CSharp-firstpass</Name>    </ProjectReference>
+    <ProjectReference Include="Assembly-UnityScript-firstpass.unityproj">
+      <Project>{F32E9F7F-E9A3-FAF7-BDEF-F941EBB08D28}</Project>      <Name>Assembly-UnityScript-firstpass</Name>    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+	   Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  
+</Project>

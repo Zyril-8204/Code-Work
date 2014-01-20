@@ -1,0 +1,22 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\gameplay\playerMovement2D.js">
+    <Files>
+      <File FileName="Assets\Scripts\gameplay\playerMovement2D.js" Line="133" Column="3" />
+      <File FileName="Assets\Scripts\gameplay\obsticles\traps\fallingSpikeEnd.js" Line="7" Column="6" />
+      <File FileName="Assets\Patrick\Elevator Prefab\PlatformMover.js" Line="11" Column="1" />
+      <File FileName="Assets\Scripts\Warp.js" Line="24" Column="31" />
+      <File FileName="Assets\Standard Assets\Inventory.js" Line="9" Column="32" />
+      <File FileName="Assets\Standard Assets\Item.js" Line="41" Column="20" />
+      <File FileName="Assets\Arachnoporkia\Scripts\Arachnoporkia.js" Line="39" Column="22" />
+      <File FileName="Assets\Scripts\gameplay\obsticles\traps\damageScript.js" Line="18" Column="2" />
+      <File FileName="Assets\Scripts\enemyAI.js" Line="66" Column="32" />
+      <File FileName="Assets\Standard Assets\gameControl.js" Line="91" Column="19" />
+      <File FileName="Assets\Standard Assets\Stats.js" Line="146" Column="5" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

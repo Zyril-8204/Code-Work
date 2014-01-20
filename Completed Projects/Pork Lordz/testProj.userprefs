@@ -1,0 +1,45 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\gameplay\Swinging.js">
+    <Files>
+      <File FileName="Assets\Scripts\gameplay\Swinging.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\gameplay\playerMovement2D.js" Line="100" Column="2" />
+      <File FileName="Assets\Scripts\menu system\ScriptMainMenu.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\menu system\statsMenu.js" Line="1" Column="35" />
+      <File FileName="Assets\Scripts\gameplay\introScreen\spalshFade.js" Line="17" Column="25" />
+      <File FileName="Assets\Scripts\gameplay\gameWonScreen\gameWonScript.js" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\gameplay\playerMovement3D.js" Line="112" Column="4" />
+      <File FileName="Assets\Scripts\gameplay\gameControl.js" Line="37" Column="39" />
+      <File FileName="Assets\Scripts\gameplay\introScreen\creditFade.js" Line="10" Column="12" />
+      <File FileName="Assets\Scripts\menu system\PauseMenu3D.js" Line="72" Column="2" />
+      <File FileName="Assets\Scripts\menu system\PauseMenu2D.js" Line="7" Column="30" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="Assembly-CSharp" expanded="True">
+            <Node name="Assets" expanded="True">
+              <Node name="Scripts" expanded="True">
+                <Node name="menu system" expanded="True" />
+              </Node>
+            </Node>
+          </Node>
+          <Node name="Assembly-UnityScript" expanded="True">
+            <Node name="Assets" expanded="True">
+              <Node name="Scripts" expanded="True">
+                <Node name="gameplay" expanded="True">
+                  <Node name="Swinging.js" selected="True" />
+                </Node>
+              </Node>
+            </Node>
+          </Node>
+          <Node name="Assembly-UnityScript-firstpass" expanded="True" />
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
