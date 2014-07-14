@@ -1,0 +1,1732 @@
+// This is how to not do things and something I've had to baby/work on constantly
+// it breaks all the time when we do any DB updates to the schema.
+
+using System;
+using System.Text;
+using System.Data;
+using System.Web;
+using System.Collections;
+using System.Xml;
+using System.IO;
+using System.Text.RegularExpressions;
+
+using Spiral16.Utilities;
+using Spiral16.SAS.DAL;
+using System.Configuration;
+
+
+namespace Spiral16.SAS.BLL
+{
+    public class Page : Spiral16.Data.Entity.cci.Page
+    {
+        #region Private Variables
+
+        private string _db_connection = string.Empty;
+        private int _pageID = 0;
+        private int _sentimentID = 0;
+        private int _sentimentPositiveID = 0;
+        private int _sentimentNegativeID = 0;
+        private int _siteTypeID = 0;
+        private string _title = string.Empty;
+        private string _url = string.Empty;
+        private string _summary = string.Empty;
+        private DateTime _datePosted = DateTime.MaxValue;
+        private bool _manualProcess = false;
+        
+        private Spiral16.SAS.DAL.Site _site;
+
+        #endregion
+
+        #region Public Properties
+
+        #region PageID
+        public int PageID
+        {
+            get { return _pageID; }
+        }
+        #endregion
+
+        #region SentimentID
+        public int SentimentID
+        {
+            get { return _sentimentID; }
+        }
+        #endregion
+
+        #region SiteTypeID
+        public int SiteTypeID
+        {
+            get { return _siteTypeID; }
+        }
+        #endregion
+
+        #region Title
+        public string Title
+        {
+            get { return _title; }
+        }
+        #endregion
+
+        #region URL
+        public string URL
+        {
+            get { return _url; }
+        }
+        #endregion
+
+        #region Summary
+        public string Summary
+        {
+            get { return _summary; }
+        }
+        #endregion
+
+        #region DatePosted
+        public DateTime DatePosted
+        {
+            get { return _datePosted; }
+        }
+        #endregion
+
+        #region ManualProcess
+        public bool ManualProcess
+        {
+            get { return _manualProcess; }
+        }
+        #endregion
+
+        #endregion
+
+        #region Constructor
+        public Page(string db_connection)
+        {
+            _db_connection = db_connection;
+            _site = new Spiral16.SAS.DAL.Site(db_connection);
+        }
+        public Page()
+        {
+            _db_connection = ConfigurationManager.ConnectionStrings["DBString"].ConnectionString;
+            _site = new Spiral16.SAS.DAL.Site(_db_connection);
+        }
+        #endregion
+
+        #region BuildExplorerPageLayout
+        public string BuildExplorerPageLayout(DataRow row, DataRow[] foundQueries, DataRow[] foundexcerpts, DataRow[] foundtags, SparkUser sparkUser)
+        {
+            StringBuilder sb = new StringBuilder();
+            #region HTML Schema
+            /*
+                <table cellpadding="0" cellspacing="0">
+	                <tbody>
+		                <tr>
+			                <th scope='row' class='check-column'><input onClick="siteSelectionChanged(12091853); uncheckSelectAll();" name="cbs_12091853" id="cbs_12091853" type="checkbox"></th>
+			                <th scope='row' class='column-sitetype'><img src="images/site_types/general-32.png" title="General" alt="General"></th>
+			                <td class="column-siteinfo">
+				                <div class="siteTitle">
+					                <img src="images/icons/circle_green.png" title="Node Sentiment Is Positive">&nbsp;&nbsp;
+					                <a href="topicExplorerDetail.html" title="View Details">Elena Kagan - WhoRunsGov.com is a wholly owned subsidiary of the Washington Post</a>
+				                </div>
+				                <table border="0" cellpadding="0" cellspacing="0">
+					                <tbody>
+                                        <tr>
+							                <td class="column-domain">from: <a href="http://www.whorunsgov.com/Profiles/Elena_Kagan" target="_blank">whorunsgov.com</a>&nbsp;<a href="http://en.wikipedia.org" title="View Domain in Browser" target="_blank"><img src="images/actions/navigate_away.png" height="16" width="16" border="0" /></a></td>
+							                <td class="column-influence" align="center" valign="middle">influence: <span class="subtitle_text">1</span></td>
+							                <td class="column-posted" align="right" valign="middle">posted: <span class="subtitle_text">05/10/2010</span></td>
+						                </tr>
+                                        <tr>
+							                <td colspan="3" class="explorer_text">"Jan 28, 2009 ... Kagan is the first woman to hold the office of solicitor general in the Justice   Department, often referred to informally as the "10th ..."</td>
+						                </tr>
+						                <div id="excerpt_loader_555">
+							                <tr>
+								                <td colspan="3" class="excerpt_text">
+									                <p class="excerpt_text_neu">Big News on Elena Kagan. Includes blogs, news, and community conversations about Elena Kagan&nbsp;&#8211;&nbsp;(5/12/2010)&nbsp;<img src="images/actions/edit.png" style="cursor: pointer;" onClick="editExcerpt(12102271);" title="Edit Node">&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12102271);" title="Delete Node"></p>
+									                <p class="excerpt_text_n">Elena Kagan shot my dog&nbsp;&#8211;&nbsp;(5/12/2010)&nbsp;<img src="images/actions/edit.png" style="cursor: pointer;" onClick="editExcerpt(12102271);" title="Edit Node">&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12102271);" title="Delete Node"></p>
+									                <p class="excerpt_text_p">Elena Kagan's tears can cure lupus!&nbsp;&#8211;&nbsp;(5/12/2010)&nbsp;<img src="images/actions/edit.png" style="cursor: pointer;" onClick="editExcerpt(12102271);" title="Edit Node">&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12102271);" title="Delete Node"></p>
+								                </td>
+							                </tr>
+						                </div>
+						                <tr>
+							                <td class="column-added"><i>Matched Query: "Elena Kagan", "SCOTUS" Nominee, "SCOTUS" Nomination</i></td>
+							                <td class="column-options"></td>
+							                <td class="column-posted">date captured: 05/10/2010</td>
+						                </tr>
+                                        <tr>
+							                <td colspan="3" class="explorer_tags">tagged: <span class="subtitle_text"><a href="#">Politics</a>, <a href="#">WashPo</a>, <a href="#">Partisan</a></span></td>
+						                </tr>
+					                </tbody>
+				                </table>
+			                </td>
+			                <th scope="row" class="column-options">
+				                <p><img src="images/actions/favorite.png" style="cursor: pointer;" onClick="favoriteSite(12102271);" title="Favorite Node"></p>
+				                <p><img src="images/actions/tag_blue.png" height="16" width="16" style="cursor:pointer" onClick="addTag(12102271);" title="Add/Edit Tags"> </p>
+				                <p><img src="images/icons/tasks.png" style="cursor: pointer;" onClick="addNoteTask(12102271);" title="Add A Note/Task"></p>
+				                <p><img src="images/actions/edit.png" style="cursor: pointer;" onClick="editSite(12102271);" title="Edit Node"></p>
+				                <p><img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12102271);" title="Delete Node"></p>
+			                </th>
+		                </tr>
+	                </tbody>
+                </table>
+            */
+            #endregion
+
+            // Initialize basic variables
+            string siteTypeIcon = "general";
+            string siteType = "General";
+            string sentimentIcon = "grey";
+            string sentiment = "Neutral";
+            bool isFavorite = Convert.ToBoolean(row["IsFavorite"]);
+            bool hasTasks = Convert.ToBoolean(row["HasTasks"]);
+            bool hasExcerpts = Convert.ToBoolean(row["HasExcerpt"]);
+            int influence = row["Influence"].ToInt() ?? 0;
+            int siteID = row["SiteID"].ToInt() ?? 0;
+            string url = row["URL"].ToString();
+            string domainID = row["DomainID"].ToString();
+            string domainURL = row["DomainURL"].ToString();
+            DateTime datePosted = DateTime.MaxValue;
+            if (!row.IsNull("DatePosted"))
+            {
+                datePosted = Convert.ToDateTime(row["DatePosted"]);
+            }
+            DateTime dateCaptured = Convert.ToDateTime(row["DateCreated"]);
+
+            string title = HttpUtility.HtmlDecode(HttpUtility.UrlDecode(row["Title"].ToString()));
+            title = StringManipulation.EncodeTagRemove(StringManipulation.HTMLTagRemove(title));
+
+            string extra = HttpUtility.HtmlDecode(HttpUtility.UrlDecode(row["Extra"].ToString()));
+            extra = StringManipulation.EncodeTagRemove(StringManipulation.HTMLTagRemove(extra));
+
+            #region Find Site Type Information
+            switch (row["SiteTypeID"].ToInt())
+            {
+                case (int)Enums.SiteType.Blogs:
+                    siteTypeIcon = "blog";
+                    siteType = "Blogs";
+                    break;
+                case (int)Enums.SiteType.News:
+                    siteTypeIcon = "news";
+                    siteType = "News";
+                    break;
+                case (int)Enums.SiteType.Shopping:
+                    siteTypeIcon = "shopping";
+                    siteType = "Shopping";
+                    break;
+                case (int)Enums.SiteType.Social:
+                    siteTypeIcon = "social";
+                    siteType = "Social";
+                    break;
+                case (int)Enums.SiteType.Video:
+                    siteTypeIcon = "video";
+                    siteType = "Video";
+                    break;
+                case (int)Enums.SiteType.Twitter:
+                    siteTypeIcon = "twitter";
+                    siteType = "Twitter";
+                    break;
+                case (int)Enums.SiteType.Facebook:
+                    siteTypeIcon = "facebook";
+                    siteType = "Facebook";
+                    break;
+                default:
+                    break;
+            }
+            #endregion
+
+            #region Find Page Sentiment Information
+            switch (row["SentimentID"].ToInt())
+            {
+                case -5:
+                    sentimentIcon = "red";
+                    sentiment = "Negative";
+                    break;
+                case -4:
+                    sentimentIcon = "red";
+                    sentiment = "Negative";
+                    break;
+                case -3:
+                    sentimentIcon = "red";
+                    sentiment = "Negative";
+                    break;
+                case -2:
+                    sentimentIcon = "red";
+                    sentiment = "Negative";
+                    break;
+                case -1:
+                    sentimentIcon = "grey";
+                    sentiment = "Neutral";
+                    break;
+                case 0:
+                    sentimentIcon = "grey";
+                    sentiment = "Neutral";
+                    break;
+                case 1:
+                    sentimentIcon = "grey";
+                    sentiment = "Neutral";
+                    break;
+                case 2:
+                    sentimentIcon = "green";
+                    sentiment = "Positive";
+                    break;
+                case 3:
+                    sentimentIcon = "green";
+                    sentiment = "Positive";
+                    break;
+                case 4:
+                    sentimentIcon = "green";
+                    sentiment = "Positive";
+                    break;
+                case 5:
+                    sentimentIcon = "green";
+                    sentiment = "Positive";
+                    break;
+                default:
+                    break;
+            }
+            #endregion
+
+            sb.Append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"gadget_space\">");
+            sb.Append("<tbody>");
+            sb.Append("<tr>");
+
+            sb.Append("<th scope='row' class='check-column'><input onClick=\"site_selected_change(" + siteID.ToString() + ");\" name=\"cb_sites\" id=\"cbs_" + siteID.ToString() + "\" type=\"checkbox\"></th>");
+            sb.Append("<th scope='row' class='column-sitetype'><img src=\"images/site_types/" + siteTypeIcon + "-32.png\" title=\"" + siteType + "\" alt=\"" + siteType + "\"></th>");
+            sb.Append("<td class=\"column-siteinfo\"><div class=\"siteTitle\"><img src=\"images/icons/circle_" + sentimentIcon + ".png\" title=\"Page Sentiment Is " + sentiment + "\">&nbsp;");
+
+            if (isFavorite)
+            {
+                sb.Append("<img src=\"images/actions/favorite.png\" />");
+            }
+            sb.Append("&nbsp;<a href=\"javascript:void(0);\" onclick=\"view_site_details(" + row["SiteID"].ToString() + ");\">" + title + "</a></div>");
+
+            sb.Append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+            sb.Append("<tbody>");
+
+            #region Domain/Influence/Date Posted
+            sb.Append("<tr>");
+            sb.Append("<td class=\"column-domain\">from: <span class=\"subtitle_text\" title=\"\"><a href=\"javascript:void(0);\" onclick=\"page_domain_selected('" + domainID + "', " + sparkUser.TopicID.ToString() + ");\">" + domainURL + "</a>");
+            sb.Append("&nbsp;<a href=\"" + url + "\" title=\"View Live Link\" target=\"_blank\"><img src=\"images/actions/navigate_away.png\" height=\"16\" width=\"16\" border=\"0\" /></a></span></td>");
+            sb.Append("<td class=\"column-influence\" align=\"center\" valign=\"middle\">influence: <span class=\"subtitle_text\">" + influence.ToString() + "</span></td>");
+            sb.Append("<td class=\"column-posted\" align=\"right\" valign=\"middle\">date posted: <span class=\"subtitle_text\">" + ((datePosted.Date == DateTime.MaxValue.Date) ? "N/A" : datePosted.ToString("MM/dd/yyyy")) + "</span></td>");
+            sb.Append("</tr>");
+            #endregion
+
+            #region Author
+            sb.Append("<tr>");
+            int authCounts = row["AuthorCounts"].ToInt() ?? 0;
+            sb.Append("<td colspan=\"3\"><div class=\"explorer_subhead\">");
+            if (authCounts > 0)
+            {
+                sb.Append("authors (<a href=\"javascript:void(0);\" onclick=\"load_author_list(" + siteID.ToString() + ");\">" + authCounts.ToString() + "</a>)</div><div style=\"display:none;\" id=\"author_site_" + siteID.ToString() + "\"></div></td>");
+            }
+            else
+            {
+                sb.Append("authors (" + authCounts.ToString() + ")</div></td>");
+            }
+            sb.Append("</tr>");
+            #endregion
+
+            #region Summary
+            sb.Append("<tr>");
+            sb.Append("<td colspan=\"3\"><div class=\"explorer_subhead\">summary</div><span class=\"explorer_text\">\"" + extra + "\"</span></td>");
+            sb.Append("</tr>");
+            #endregion
+
+            #region Build Excerpt Layout
+            sb.Append("<tr>");
+            sb.Append("<td colspan=\"3\" class=\"excerpt_text\">");
+            sb.Append("<div class=\"explorer_subhead\">sentiment excerpts<span class=\"subhead_option\">");
+            sb.Append("<img src=\"images/actions/add.png\" title=\"Add Excerpt\" style=\"cursor: pointer;\" onclick=\"edit_excerpt(0, " + siteID.ToString() + ");\" />");
+            sb.Append("</span></div>");
+            sb.Append("<div id=\"excerpt_list_" + siteID.ToString() + "\">");
+            for (int j = 0; j < foundexcerpts.Length; j++)
+            {
+                string excerpt_class = "excerpt_text_neu";
+
+                #region Excerpt Sentiment Information
+                switch (foundexcerpts[j]["SentimentID"].ToInt())
+                {
+                    case -5:
+                        excerpt_class = "excerpt_text_n";
+                        break;
+                    case -4:
+                        excerpt_class = "excerpt_text_n";
+                        break;
+                    case -3:
+                        excerpt_class = "excerpt_text_n";
+                        break;
+                    case -2:
+                        excerpt_class = "excerpt_text_n";
+                        break;
+                    case -1:
+                        excerpt_class = "excerpt_text_neu";
+                        break;
+                    case 0:
+                        excerpt_class = "excerpt_text_neu";
+                        break;
+                    case 1:
+                        excerpt_class = "excerpt_text_neu";
+                        break;
+                    case 2:
+                        excerpt_class = "excerpt_text_p";
+                        break;
+
+                    case 3:
+                        excerpt_class = "excerpt_text_p";
+                        break;
+                    case 4:
+                        excerpt_class = "excerpt_text_p";
+                        break;
+                    case 5:
+                        excerpt_class = "excerpt_text_p";
+                        break;
+                    default:
+                        break;
+                }
+                #endregion
+                string options = string.Empty;
+                if (sparkUser.VerifyRole(Enums.Roles.User))
+                {
+                    options = "&nbsp;<img src=\"images/actions/edit_10.png\" style=\"cursor: pointer;\" onClick=\"edit_excerpt(" + foundexcerpts[j]["ConversationID"].ToString() + ", " + siteID.ToString() + ");\" title=\"Edit Excerpt\">&nbsp;<img src=\"images/actions/delete_10.png\" style=\"cursor: pointer;\" onClick=\"delete_excerpt(" + foundexcerpts[j]["ConversationID"].ToString() + ", " + siteID + ");\" title=\"Delete Excerpt\" />";
+                }
+                sb.Append("<p class=\"" + excerpt_class + "\">" + foundexcerpts[j]["Text"].ToString() + options + "</p>");
+            }
+            sb.Append("</div>");
+            sb.Append("</td>");
+            sb.Append("</tr>");
+            #endregion
+
+            #region Build Query Layout
+            StringBuilder qs = new StringBuilder();
+            string delim = string.Empty;
+            for (int i = 0; i < foundQueries.Length; i++)
+            {
+                qs.Append(delim + foundQueries[i]["Label"].ToString());
+                delim = ", ";
+            }
+            #endregion
+
+            #region Match Query/Tasks/Date Captured
+            sb.Append("<tr>");
+            sb.Append("<td class=\"column-added\">matched query: <i>" + ((qs.ToString() != string.Empty) ? qs.ToString() : "N/A") + "</i></td>");
+            string tasks = string.Empty;
+            if (hasTasks)
+            {
+                tasks = "<a href=\"/Task\"><img src=\"images/icons/has_task.png\" border=\"0\"/></a>";
+            }
+            sb.Append("<td class=\"column-options\" align=\"center\" valign=\"middle\">&nbsp;" + tasks + "&nbsp;</td>");
+            sb.Append("<td class=\"column-captured\">date captured: " + dateCaptured.ToString("MM/dd/yyyy") + "</td>");
+            sb.Append("</tr>");
+            #endregion
+            
+            #region Tags/Score
+            sb.Append("<tr>");
+            sb.Append("<td colspan=\"2\" class=\"explorer_tags\">tagged: <span class=\"subtitle_text\">");
+            delim = string.Empty;
+            for (int k = 0; k < foundtags.Length; k++)
+            {
+                sb.Append(delim + foundtags[k]["Tag"].ToString());
+                delim = ", ";
+            }
+            sb.Append("</span></td>");
+
+            string score = string.Empty;
+            if (!row.IsNull("CorrelationScore"))
+            {
+
+                try
+                {
+                    double d = Convert.ToDouble(row["CorrelationScore"]);
+                    score = "<img src=\"images/icons/Info.png\" alt=\"Score settings may have changes after this page was brought in\" title=\"Score settings may have changes after this page was brought in\"/>&nbsp;&nbsp;page score: " + Math.Round(d).ToString() + "%";
+                }
+                catch(Exception ex) { Logger.Warn(ex); }
+            }
+            sb.Append("<td class=\"column-posted\">" + score + "</td>");
+            sb.Append("</tr>");
+            #endregion
+            
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+
+            sb.Append("</td>");
+
+            sb.Append("<th scope=\"row\" class=\"column-options\">");
+            if (sparkUser.VerifyRole(Enums.Roles.User))
+            {
+                sb.Append("<p><img src=\"images/actions/favorite.png\" style=\"cursor: pointer;\" onClick=\"set_favorite(" + siteID.ToString() + ");\" title=\"Favorite Page\" height=\"16\" weight=\"16\"></p>");
+                sb.Append("<p><img src=\"images/actions/tag_blue.png\" style=\"cursor: pointer;\" onClick=\"edit_tags_page(" + siteID.ToString() + ");\" title=\"Tag Page\"></p>");
+                sb.Append("<p><a href=\"/Task/Create?insightPageID=" + siteID.ToString() + "\" data-colorbox=\"iframe\" data-colorbox-width=\"550px\" data-colorbox-height=\"600px\"><img src=\"images/icons/tasks.png\" style=\"cursor: pointer;\" title=\"Add Task\" height=\"16\" weight=\"16\" /></a></p>");
+                sb.Append("<p><img src=\"images/actions/edit.png\" style=\"cursor: pointer;\" onClick=\"edit_page(" + siteID.ToString() + ");\" title=\"Edit Page\"></p>");
+                sb.Append("<p><img src=\"images/actions/delete.png\" style=\"cursor: pointer;\" onClick=\"delete_site(" + siteID.ToString() + ");\" title=\"Delete Page\"></p>");
+            }
+            sb.Append("</th>");
+
+            sb.Append("</tr>");
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+
+            return sb.ToString();
+        }
+        #endregion
+
+        #region BuildExplorerPageLayoutExport
+        public string BuildExplorerPageLayoutExport(DataRow row, DataRow[] foundQueries, DataRow[] foundexcerpts, DataRow[] foundtags, SparkUser sparkUser, string siteLocation)
+        {
+            StringBuilder sb = new StringBuilder();
+            #region HTML Schema
+            /*
+                <table cellpadding="0" cellspacing="0">
+	                <tbody>
+		                <tr>
+			                <th scope='row' class='check-column'><input onClick="siteSelectionChanged(12091853); uncheckSelectAll();" name="cbs_12091853" id="cbs_12091853" type="checkbox"></th>
+			                <th scope='row' class='column-sitetype'><img src="images/site_types/general-32.png" title="General" alt="General"></th>
+			                <td class="column-siteinfo">
+				                <div class="siteTitle">
+					                <img src="images/icons/circle_green.png" title="Node Sentiment Is Positive">&nbsp;&nbsp;
+					                <a href="topicExplorerDetail.html" title="View Details">Elena Kagan - WhoRunsGov.com is a wholly owned subsidiary of the Washington Post</a>
+				                </div>
+				                <table border="0" cellpadding="0" cellspacing="0">
+					                <tbody>
+                                        <tr>
+							                <td class="column-domain">from: <a href="http://www.whorunsgov.com/Profiles/Elena_Kagan" target="_blank">whorunsgov.com</a>&nbsp;<a href="http://en.wikipedia.org" title="View Domain in Browser" target="_blank"><img src="images/actions/navigate_away.png" height="16" width="16" border="0" /></a></td>
+							                <td class="column-influence" align="center" valign="middle">influence: <span class="subtitle_text">1</span></td>
+							                <td class="column-posted" align="right" valign="middle">posted: <span class="subtitle_text">05/10/2010</span></td>
+						                </tr>
+                                        <tr>
+							                <td colspan="3" class="explorer_text">"Jan 28, 2009 ... Kagan is the first woman to hold the office of solicitor general in the Justice   Department, often referred to informally as the "10th ..."</td>
+						                </tr>
+						                <div id="excerpt_loader_555">
+							                <tr>
+								                <td colspan="3" class="excerpt_text">
+									                <p class="excerpt_text_neu">Big News on Elena Kagan. Includes blogs, news, and community conversations about Elena Kagan&nbsp;&#8211;&nbsp;(5/12/2010)&nbsp;<img src="images/actions/edit.png" style="cursor: pointer;" onClick="editExcerpt(12102271);" title="Edit Node">&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12102271);" title="Delete Node"></p>
+									                <p class="excerpt_text_n">Elena Kagan shot my dog&nbsp;&#8211;&nbsp;(5/12/2010)&nbsp;<img src="images/actions/edit.png" style="cursor: pointer;" onClick="editExcerpt(12102271);" title="Edit Node">&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12102271);" title="Delete Node"></p>
+									                <p class="excerpt_text_p">Elena Kagan's tears can cure lupus!&nbsp;&#8211;&nbsp;(5/12/2010)&nbsp;<img src="images/actions/edit.png" style="cursor: pointer;" onClick="editExcerpt(12102271);" title="Edit Node">&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12102271);" title="Delete Node"></p>
+								                </td>
+							                </tr>
+						                </div>
+						                <tr>
+							                <td class="column-added"><i>Matched Query: "Elena Kagan", "SCOTUS" Nominee, "SCOTUS" Nomination</i></td>
+							                <td class="column-options"></td>
+							                <td class="column-posted">date captured: 05/10/2010</td>
+						                </tr>
+                                        <tr>
+							                <td colspan="3" class="explorer_tags">tagged: <span class="subtitle_text"><a href="#">Politics</a>, <a href="#">WashPo</a>, <a href="#">Partisan</a></span></td>
+						                </tr>
+					                </tbody>
+				                </table>
+			                </td>
+			                <th scope="row" class="column-options">
+				                <p><img src="images/actions/favorite.png" style="cursor: pointer;" onClick="favoriteSite(12102271);" title="Favorite Node"></p>
+				                <p><img src="images/actions/tag_blue.png" height="16" width="16" style="cursor:pointer" onClick="addTag(12102271);" title="Add/Edit Tags"> </p>
+				                <p><img src="images/icons/tasks.png" style="cursor: pointer;" onClick="addNoteTask(12102271);" title="Add A Note/Task"></p>
+				                <p><img src="images/actions/edit.png" style="cursor: pointer;" onClick="editSite(12102271);" title="Edit Node"></p>
+				                <p><img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12102271);" title="Delete Node"></p>
+			                </th>
+		                </tr>
+	                </tbody>
+                </table>
+            */
+            #endregion
+
+            // Initialize basic variables
+            string siteTypeIcon = "general";
+            string siteType = "General";
+            string sentimentIcon = "grey";
+            string sentiment = "Neutral";
+            bool isFavorite = Convert.ToBoolean(row["IsFavorite"]);
+            bool hasTasks = Convert.ToBoolean(row["HasTasks"]);
+            bool hasExcerpts = Convert.ToBoolean(row["HasExcerpt"]);
+            int influence = row["Influence"].ToInt() ?? 0;
+            int siteID = row["SiteID"].ToInt() ?? 0;
+            string url = row["URL"].ToString();
+            string domainID = row["DomainID"].ToString();
+            string domainURL = row["DomainURL"].ToString();
+            DateTime datePosted = DateTime.MaxValue;
+            if (!row.IsNull("DatePosted"))
+            {
+                datePosted = Convert.ToDateTime(row["DatePosted"]);
+            }
+            DateTime dateCaptured = Convert.ToDateTime(row["DateCreated"]);
+
+            string title = HttpUtility.HtmlDecode(HttpUtility.UrlDecode(row["Title"].ToString()));
+            title = StringManipulation.EncodeTagRemove(StringManipulation.HTMLTagRemove(title));
+
+            string extra = HttpUtility.HtmlDecode(HttpUtility.UrlDecode(row["Extra"].ToString()));
+            extra = StringManipulation.EncodeTagRemove(StringManipulation.HTMLTagRemove(extra));
+
+            #region Site Type Information
+            switch (row["SiteTypeID"].ToInt())
+            {
+                case (int)Enums.SiteType.Blogs:
+                    siteTypeIcon = "blog";
+                    siteType = "Blogs";
+                    break;
+                case (int)Enums.SiteType.News:
+                    siteTypeIcon = "news";
+                    siteType = "News";
+                    break;
+                case (int)Enums.SiteType.Shopping:
+                    siteTypeIcon = "shopping";
+                    siteType = "Shopping";
+                    break;
+                case (int)Enums.SiteType.Social:
+                    siteTypeIcon = "social";
+                    siteType = "Social";
+                    break;
+                case (int)Enums.SiteType.Video:
+                    siteTypeIcon = "video";
+                    siteType = "Video";
+                    break;
+                case (int)Enums.SiteType.Twitter:
+                    siteTypeIcon = "twitter";
+                    siteType = "Twitter";
+                    break;
+                case (int)Enums.SiteType.Facebook:
+                    siteTypeIcon = "facebook";
+                    siteType = "Facebook";
+                    break;
+                default:
+                    break;
+            }
+            #endregion
+
+            #region Page Sentiment Information
+            switch (row["SentimentID"].ToInt())
+            {
+                case -5:
+                    sentimentIcon = "red";
+                    sentiment = "Negative";
+                    break;
+                case -4:
+                    sentimentIcon = "red";
+                    sentiment = "Negative";
+                    break;
+                case -3:
+                    sentimentIcon = "red";
+                    sentiment = "Negative";
+                    break;
+                case -2:
+                    sentimentIcon = "red";
+                    sentiment = "Negative";
+                    break;
+                case -1:
+                    sentimentIcon = "grey";
+                    sentiment = "Neutral";
+                    break;
+                case 0:
+                    sentimentIcon = "grey";
+                    sentiment = "Neutral";
+                    break;
+                case 1:
+                    sentimentIcon = "grey";
+                    sentiment = "Neutral";
+                    break;
+                case 2:
+                    sentimentIcon = "green";
+                    sentiment = "Positive";
+                    break;
+                case 3:
+                    sentimentIcon = "green";
+                    sentiment = "Positive";
+                    break;
+                case 4:
+                    sentimentIcon = "green";
+                    sentiment = "Positive";
+                    break;
+                case 5:
+                    sentimentIcon = "green";
+                    sentiment = "Positive";
+                    break;
+                default:
+                    break;
+            }
+            #endregion
+
+            sb.Append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"gadget_space\">");
+            sb.Append("<tbody>");
+            sb.Append("<tr>");
+
+            sb.Append("<th scope='row' class='check-column'>&nbsp;</th>");
+            sb.Append("<th scope='row' class='column-sitetype'><img src=\"" + siteLocation + "images/site_types/" + siteTypeIcon + "-32.png\" title=\"" + siteType + "\" alt=\"" + siteType + "\"></th>");
+            sb.Append("<td class=\"column-siteinfo\"><div class=\"siteTitle\"><img src=\"" + siteLocation + "images/icons/circle_" + sentimentIcon + ".png\" title=\"Page Sentiment Is " + sentiment + "\">&nbsp;");
+
+            if (isFavorite)
+            {
+                sb.Append("<img src=\"" + siteLocation + "images/actions/favorite.png\" />");
+            }
+            sb.Append("&nbsp;" + title + "</div>");
+
+            sb.Append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+            sb.Append("<tbody>");
+            sb.Append("<tr>");
+
+            sb.Append("<td class=\"column-domain\">from: <span class=\"subtitle_text\">" + domainURL + "</span></td>");
+            sb.Append("<td class=\"column-influence\" align=\"center\" valign=\"middle\">influence: <span class=\"subtitle_text\">" + influence.ToString() + "</span></td>");
+            sb.Append("<td class=\"column-posted\" align=\"right\" valign=\"middle\">date posted: <span class=\"subtitle_text\">" + ((datePosted.Date == DateTime.MaxValue.Date) ? "N/A" : datePosted.ToString("MM/dd/yyyy")) + "</span></td>");
+
+            sb.Append("</tr>");
+            sb.Append("<tr>");
+
+            sb.Append("<td colspan=\"3\" class=\"explorer_text\">\"" + extra + "\"</td>");
+
+            sb.Append("</tr>");
+            sb.Append("<tr>");
+
+            #region Build Excerpt Layout
+            if (hasExcerpts)
+            {
+                sb.Append("<tr>");
+                sb.Append("<td colspan=\"3\" class=\"excerpt_text\">");
+                sb.Append("<div class=\"explorer_subhead\">sentiment excerpts<span class=\"subhead_option\"></div>");
+                sb.Append("<div id=\"excerpt_list_" + siteID.ToString() + "\">");
+                for (int j = 0; j < foundexcerpts.Length; j++)
+                {
+                    string excerpt_class = "excerpt_text_neu";
+
+                    #region Excerpt Sentiment Information
+                    switch (foundexcerpts[j]["SentimentID"].ToInt() ?? 0)
+                    {
+                        case -5:
+                            excerpt_class = "excerpt_text_n";
+                            break;
+                        case -4:
+                            excerpt_class = "excerpt_text_n";
+                            break;
+                        case -3:
+                            excerpt_class = "excerpt_text_n";
+                            break;
+                        case -2:
+                            excerpt_class = "excerpt_text_n";
+                            break;
+                        case -1:
+                            excerpt_class = "excerpt_text_neu";
+                            break;
+                        case 0:
+                            excerpt_class = "excerpt_text_neu";
+                            break;
+                        case 1:
+                            excerpt_class = "excerpt_text_neu";
+                            break;
+                        case 2:
+                            excerpt_class = "excerpt_text_p";
+                            break;
+                        case 3:
+                            excerpt_class = "excerpt_text_p";
+                            break;
+                        case 4:
+                            excerpt_class = "excerpt_text_p";
+                            break;
+                        case 5:
+                            excerpt_class = "excerpt_text_p";
+                            break;
+                        default:
+                            break;
+                    }
+                    #endregion
+                    sb.Append("<p class=\"" + excerpt_class + "\">" + foundexcerpts[j]["Text"].ToString() + "</p>");
+                }
+                sb.Append("</div>");
+                sb.Append("</td>");
+                sb.Append("</tr>");
+            }
+            #endregion
+
+            sb.Append("<tr>");
+
+            #region Build Query Layout
+            StringBuilder qs = new StringBuilder();
+            string delim = string.Empty;
+            for (int i = 0; i < foundQueries.Length; i++)
+            {
+                qs.Append(delim + foundQueries[i]["Label"].ToString());
+                delim = ", ";
+            }
+            #endregion
+
+            sb.Append("<td class=\"column-added\">Matched Query: <i>" + ((qs.ToString() != string.Empty) ? qs.ToString() : "N/A") + "</i></td>");
+            string tasks = string.Empty;
+            if (hasTasks)
+            {
+                tasks = "<img src=\"images/icons/has_task.png\"/>";
+            }
+            sb.Append("<td class=\"column-options\" align=\"center\" valign=\"middle\">&nbsp;" + tasks + "&nbsp;</td>");
+            sb.Append("<td class=\"column-posted\">date captured: " + dateCaptured.ToString("MM/dd/yyyy") + "</td>");
+
+            sb.Append("</tr>");
+
+            sb.Append("<tr>");
+
+            #region Build Tags
+            sb.Append("<td colspan=\"3\" class=\"explorer_tags\">tagged: <span class=\"subtitle_text\">");
+            delim = string.Empty;
+            for (int k = 0; k < foundtags.Length; k++)
+            {
+                sb.Append(delim + foundtags[k]["Tag"].ToString());
+                delim = ", ";
+            }
+            sb.Append("</span></td>");
+            #endregion
+
+            sb.Append("</tr>");
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+            sb.Append("</td>");
+
+            sb.Append("<th scope=\"row\" class=\"column-options\">&nbsp;</th>");
+
+            sb.Append("</tr>");
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+
+            return sb.ToString();
+        }
+        #endregion
+
+        #region BuildExplorerDomainLayout
+        public string BuildExplorerDomainLayout(DataRow row, SparkUser sparkUser)
+        {
+            StringBuilder sb = new StringBuilder();
+            #region HTML Schema
+            /*
+                <tr>
+                    <th scope='row' class='check-column'><input onClick="siteSelectionChanged(12091853); uncheckSelectAll();" name="cbs_12091853" id="cbs_12091853" type="checkbox"></th>
+                    <th scope='row' class='column-sitetype'><img src="images/site_types/general-32.png" title="General" alt="General"></th>
+                    <td class="column-siteinfo"><div class="siteTitle"><a href="#" title="Click to expand/minimize individual Pages">wikipedia.org</a></div>
+                        <table border="0" cellpadding="0" cellspacing="0">
+                            <tbody>
+                                <tr>
+                                    <td class="column-domain">This domain has [7] accepted Pages within your topic</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="explorer_text">
+                                        <ul>
+                                            <li><img src="images/site_types/general-16.png" title="General" alt="General">&nbsp;<img src="images/icons/circle_grey.png" title="Page Sentiment Is Neutral">&nbsp;<a href="topicExplorerDetail.html" title="View Details">Elena Kagan - Personal life and education</a>&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12091853);" title="Delete Page">&lt;-displays on hover only</li>
+                                            <li><img src="images/site_types/general-16.png" title="General" alt="General">&nbsp;<img src="images/icons/circle_grey.png" title="Page Sentiment Is Neutral">&nbsp;<a href="#" title="View Details">Elena Kagan - Early Legal and academic career</a>&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12091853);" title="Delete Page"></li>
+                                            <li><img src="images/site_types/general-16.png" title="General" alt="General">&nbsp;<img src="images/icons/circle_grey.png" title="Page Sentiment Is Neutral">&nbsp;<a href="#" title="View Details">Elena Kagan - White House and judicial nomination</a>&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12091853);" title="Delete Page"></li>
+                                            <li><img src="images/site_types/general-16.png" title="General" alt="General">&nbsp;<img src="images/icons/circle_grey.png" title="Page Sentiment Is Neutral">&nbsp;<a href="#" title="View Details">Elena Kagan - Return to academia</a>&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12091853);" title="Delete Page"></li>
+                                            <li><img src="images/site_types/general-16.png" title="General" alt="General">&nbsp;<img src="images/icons/circle_grey.png" title="Page Sentiment Is Neutral">&nbsp;<a href="#" title="View Details">Elena Kagan - Solicitor General</a>&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12091853);" title="Delete Page"></li>
+                                            <li><img src="images/site_types/general-16.png" title="General" alt="General">&nbsp;<img src="images/icons/circle_grey.png" title="Page Sentiment Is Neutral">&nbsp;<a href="#" title="View Details">Elena Kagan - Indefinite detention without trial</a>&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12091853);" title="Delete Page"></li>
+                                            <li><img src="images/site_types/general-16.png" title="General" alt="General">&nbsp;<img src="images/icons/circle_grey.png" title="Page Sentiment Is Neutral">&nbsp;<a href="#" title="View Details">Elena Kagan - Supreme Court nomination</a>&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12091853);" title="Delete Page"></li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                    <th scope="row" class="column-options">
+                        <p><img src="images/actions/favorite.png" style="cursor: pointer;" onClick="favoriteSite(12091853);" title="Favorite Page"></p>
+                        <p><img src="images/icons/tasks.png" style="cursor: pointer;" onClick="#" title="Add A Note/Task" height="16" weight="16"></p>
+                        <p><img src="images/actions/edit.png" style="cursor: pointer;" onClick="editSite(12091853);" title="Edit Page"></p>
+                        <p><img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12091853);" title="Delete Page"></p>
+                    </th>
+                </tr>
+            */
+            #endregion
+            int siteTypeID = row["SiteTypeID"].ToInt() ?? 0;
+            int sentimentVal = row["Sentiment"].ToInt() ?? 0;
+            string domainURL = row["DomainURL"].ToString();
+            string domainID = row["DomainID"].ToString();
+            string pageTotals = row["PageTotals"].ToString();
+            string dsentIcon = "grey";
+            string dsent = "Neutral";
+            string st = "general";
+            string stTitle = "General";
+
+            switch (siteTypeID)
+            {
+                case (int)Enums.SiteType.Blogs:
+                    stTitle = "Blogs";
+                    st = "blog";
+                    break;
+                case (int)Enums.SiteType.News:
+                    stTitle = "News";
+                    st = "news";
+                    break;
+                case (int)Enums.SiteType.Shopping:
+                    stTitle = "Shopping";
+                    st = "shopping";
+                    break;
+                case (int)Enums.SiteType.Social:
+                    stTitle = "Social";
+                    st = "social";
+                    break;
+                case (int)Enums.SiteType.Video:
+                    stTitle = "Video";
+                    st = "video";
+                    break;
+                case (int)Enums.SiteType.Twitter:
+                    stTitle = "Twitter";
+                    st = "twitter";
+                    break;
+                case (int)Enums.SiteType.Facebook:
+                    stTitle = "facebook";
+                    st = "Facebook";
+                    break;
+                default:
+                    break;
+            }
+
+            if (sentimentVal == 1)
+            {
+                dsentIcon = "green";
+                dsent = "Positive";
+            }
+            else if (sentimentVal == -1)
+            {
+                dsentIcon = "red";
+                dsent = "Negative";
+            }
+
+            sb.Append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"gadget_space\">");
+            sb.Append("<tbody>");
+            sb.Append("<tr>");
+            sb.Append("<th scope='row' class='check-column'><input onClick=\"domain_selected_change('" + domainID + "');\" name=\"cb_domains\" id=\"cbd_" + domainID + "\" type=\"checkbox\"></th>");
+            sb.Append("<th scope='row' class='column-sitetype'><img src=\"images/site_types/" + st + "-32.png\" title=\"" + stTitle + "\" alt=\"" + stTitle + "\"></th>");
+            sb.Append("<td class=\"column-siteinfo\"><div class=\"siteTitle\"><img src=\"images/icons/circle_" + dsentIcon + ".png\" title=\"Page Sentiment Is " + dsent + "\">&nbsp;");
+            sb.Append("<a href=\"javascript:void(0);\" title=\"Click to expand/minimize individual Pages\" onclick=\"expand_collapse_domain('" + domainID + "');\">" + domainURL + "</a>&nbsp;");
+            sb.Append("<a href=\"http://" + domainURL + "\" title=\"View Live Link\" target=\"_blank\"><img src=\"images/actions/navigate_away.png\" height=\"16\" width=\"16\" border=\"0\" /></a>");
+            sb.Append("<a href=\"javascript:void(0);\" title=\"Search Page View\" onClick=\"search_specific_domain('" + domainURL + "');\"><img src=\"images/icons/search.png\" height=\"16\" width=\"16\" border=\"0\" /></a>");
+            sb.Append("</div>");
+
+            sb.Append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+            sb.Append("<tbody>");
+            sb.Append("<tr>");
+            sb.Append("<td class=\"column-domain\">This domain has [" + pageTotals + "] accepted Pages within your topic</td>");
+            sb.Append("</tr>");
+            sb.Append("<tr>");
+            sb.Append("<td colspan=\"3\" class=\"explorer_text\">");
+
+            sb.Append("<div id=\"dom_div_" + domainID + "\" style=\"display: none;\"></div>");
+
+            sb.Append("</td>");
+            sb.Append("</tr>");
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+            sb.Append("</td>");
+            sb.Append("<th scope=\"row\" class=\"column-options\">");
+            if (sparkUser.VerifyRole(Enums.Roles.User))
+            {
+                sb.Append("<p><img src=\"images/actions/edit.png\" style=\"cursor: pointer;\" onClick=\"edit_domain('" + row["DomainID"].ToString() + "');\" title=\"Edit Page\"></p>");
+                sb.Append("<p><img src=\"images/actions/delete.png\" style=\"cursor: pointer;\" onClick=\"delete_domain('" + row["DomainID"].ToString() + "');\" title=\"Delete Page\"></p>");
+            }
+            else
+            {
+                sb.Append("&nbsp;");
+            }
+            sb.Append("</th>");
+            sb.Append("</tr>");
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+            return sb.ToString();
+        }
+        #endregion
+
+        #region BuildExplorerDomainLayoutExport
+        public string BuildExplorerDomainLayoutExport(DataRow row, SparkUser sparkUser, string siteLocation)
+        {
+            StringBuilder sb = new StringBuilder();
+            int siteTypeID = row["SiteTypeID"].ToInt() ?? 0;
+            int sentimentVal = row["Sentiment"].ToInt() ?? 0;
+            string domainURL = row["DomainURL"].ToString();
+            string domainID = row["DomainID"].ToString();
+            string dsentIcon = "grey";
+            string dsent = "Neutral";
+            string st = "general";
+            string stTitle = "General";
+
+            switch (siteTypeID)
+            {
+                case (int)Enums.SiteType.Blogs:
+                    stTitle = "Blogs";
+                    st = "blog";
+                    break;
+                case (int)Enums.SiteType.News:
+                    stTitle = "News";
+                    st = "news";
+                    break;
+                case (int)Enums.SiteType.Shopping:
+                    stTitle = "Shopping";
+                    st = "shopping";
+                    break;
+                case (int)Enums.SiteType.Social:
+                    stTitle = "Social";
+                    st = "social";
+                    break;
+                case (int)Enums.SiteType.Video:
+                    stTitle = "Video";
+                    st = "video";
+                    break;
+                case (int)Enums.SiteType.Twitter:
+                    stTitle = "Twitter";
+                    st = "twitter";
+                    break;
+                case (int)Enums.SiteType.Facebook:
+                    stTitle = "facebook";
+                    st = "Facebook";
+                    break;
+                default:
+                    break;
+            }
+
+            if (sentimentVal == 1)
+            {
+                dsentIcon = "green";
+                dsent = "Positive";
+            }
+            else if (sentimentVal == -1)
+            {
+                dsentIcon = "red";
+                dsent = "Negative";
+            }
+
+            sb.Append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"gadget_space\">");
+            sb.Append("<tbody>");
+            sb.Append("<tr>");
+            sb.Append("<th scope='row' class='check-column'>&nbsp;</th>");
+            sb.Append("<th scope='row' class='column-sitetype'><img src=\"" + siteLocation + "images/site_types/" + st + "-32.png\" title=\"" + stTitle + "\" alt=\"" + stTitle + "\"></th>");
+            sb.Append("<td class=\"column-siteinfo\"><div class=\"siteTitle\"><img src=\"" + siteLocation + "images/icons/circle_" + dsentIcon + ".png\" title=\"Page Sentiment Is " + dsent + "\">&nbsp;");
+            sb.Append(domainURL + "</div>");
+
+            sb.Append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+            sb.Append("<tbody>");
+            sb.Append("<tr>");
+            sb.Append("<td class=\"column-domain\">This domain has [" + row["PageTotals"].ToString() + "] accepted Pages within your topic</td>");
+            sb.Append("</tr>");
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+            sb.Append("</td>");
+            sb.Append("</tr>");
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+            return sb.ToString();
+        }
+        #endregion
+
+        #region BuildExplorerAuthorLayout
+        public string BuildExplorerAuthorLayout(DataRow row, SparkUser sparkUser)
+        {
+            StringBuilder sb = new StringBuilder();
+            #region HTML Schema
+            /*
+                <tr>
+                    <th scope='row' class='check-column'><input onClick="siteSelectionChanged(12091853); uncheckSelectAll();" name="cbs_12091853" id="cbs_12091853" type="checkbox"></th>
+                    <th scope='row' class='column-sitetype'><img src="images/site_types/general-32.png" title="General" alt="General"></th>
+                    <td class="column-siteinfo"><div class="siteTitle"><a href="#" title="Click to expand/minimize individual Pages">wikipedia.org</a></div>
+                        <table border="0" cellpadding="0" cellspacing="0">
+                            <tbody>
+                                <tr>
+                                    <td class="column-domain">This domain has [7] accepted Pages within your topic</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="explorer_text">
+                                        <ul>
+                                            <li><img src="images/site_types/general-16.png" title="General" alt="General">&nbsp;<img src="images/icons/circle_grey.png" title="Page Sentiment Is Neutral">&nbsp;<a href="topicExplorerDetail.html" title="View Details">Elena Kagan - Personal life and education</a>&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12091853);" title="Delete Page">&lt;-displays on hover only</li>
+                                            <li><img src="images/site_types/general-16.png" title="General" alt="General">&nbsp;<img src="images/icons/circle_grey.png" title="Page Sentiment Is Neutral">&nbsp;<a href="#" title="View Details">Elena Kagan - Early Legal and academic career</a>&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12091853);" title="Delete Page"></li>
+                                            <li><img src="images/site_types/general-16.png" title="General" alt="General">&nbsp;<img src="images/icons/circle_grey.png" title="Page Sentiment Is Neutral">&nbsp;<a href="#" title="View Details">Elena Kagan - White House and judicial nomination</a>&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12091853);" title="Delete Page"></li>
+                                            <li><img src="images/site_types/general-16.png" title="General" alt="General">&nbsp;<img src="images/icons/circle_grey.png" title="Page Sentiment Is Neutral">&nbsp;<a href="#" title="View Details">Elena Kagan - Return to academia</a>&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12091853);" title="Delete Page"></li>
+                                            <li><img src="images/site_types/general-16.png" title="General" alt="General">&nbsp;<img src="images/icons/circle_grey.png" title="Page Sentiment Is Neutral">&nbsp;<a href="#" title="View Details">Elena Kagan - Solicitor General</a>&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12091853);" title="Delete Page"></li>
+                                            <li><img src="images/site_types/general-16.png" title="General" alt="General">&nbsp;<img src="images/icons/circle_grey.png" title="Page Sentiment Is Neutral">&nbsp;<a href="#" title="View Details">Elena Kagan - Indefinite detention without trial</a>&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12091853);" title="Delete Page"></li>
+                                            <li><img src="images/site_types/general-16.png" title="General" alt="General">&nbsp;<img src="images/icons/circle_grey.png" title="Page Sentiment Is Neutral">&nbsp;<a href="#" title="View Details">Elena Kagan - Supreme Court nomination</a>&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12091853);" title="Delete Page"></li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                    <th scope="row" class="column-options">
+                        <p><img src="images/actions/favorite.png" style="cursor: pointer;" onClick="favoriteSite(12091853);" title="Favorite Page"></p>
+                        <p><img src="images/icons/tasks.png" style="cursor: pointer;" onClick="#" title="Add A Note/Task" height="16" weight="16"></p>
+                        <p><img src="images/actions/edit.png" style="cursor: pointer;" onClick="editSite(12091853);" title="Edit Page"></p>
+                        <p><img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12091853);" title="Delete Page"></p>
+                    </th>
+                </tr>
+            */
+            #endregion
+            string authorName = row["AuthorName"].ToString();
+            string authorID = row["authorID"].ToString();
+            string pageTotals = row["PageTotals"].ToString();
+
+            sb.Append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"gadget_space\">");
+            sb.Append("<tbody>");
+            sb.Append("<tr>");
+            // Author Name
+            sb.Append("<th scope='row' class='check-column'><input onClick=\"author_selected_change('" + authorID + "');\" name=\"cb_authors\" id=\"cba_" + authorID + "\" type=\"checkbox\"></th>");
+            sb.Append("<td class=\"column-siteinfo\">");
+
+            #region Author Information Div
+            sb.Append("<div class=\"siteTitle\">");
+            sb.Append("<a href=\"javascript:void(0);\" title=\"Click to expand/minimize individual Pages\" onclick=\"expand_collapse_author(" + authorID + ");\">" + authorName + "</a>&nbsp;");
+            sb.Append("<a href=\"javascript:void(0);\" title=\"Search Page View\" onClick=\"search_specific_author('" + authorName + "');\"><img src=\"images/icons/search.png\" height=\"16\" width=\"16\" border=\"0\" /></a>");
+            sb.Append("</div>");
+            #endregion
+
+            #region Page Totals and Page List Table
+            sb.Append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+            sb.Append("<tbody>");
+            sb.Append("<tr>");
+            sb.Append("<td class=\"column-domain\">[" + pageTotals + "] posts have been identified within your topic</td>");
+            sb.Append("</tr>");
+            sb.Append("<tr>");
+            sb.Append("<td colspan=\"3\" class=\"explorer_text\">");
+
+            sb.Append("<div id=\"aom_div_" + authorID + "\" style=\"display: none;\"></div>");
+
+            sb.Append("</td>");
+            sb.Append("</tr>");
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+            #endregion
+
+            sb.Append("</td>");
+            sb.Append("<th scope=\"row\" class=\"column-options\">");
+            if (sparkUser.VerifyRole(Enums.Roles.User))
+            {
+                sb.Append("<p><img src=\"images/actions/delete.png\" style=\"cursor: pointer;\" onClick=\"delete_author('" + row["AuthorID"].ToString() + "');\" title=\"Delete All Pages For This Author\"></p>");
+            }
+            else
+            {
+                sb.Append("&nbsp;");
+            }
+            sb.Append("</th>");
+            sb.Append("</tr>");
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+            return sb.ToString();
+        }
+        #endregion
+
+        #region BuildExplorerAuthorLayoutExport
+        public string BuildExplorerAuthorLayoutExport(DataRow row, SparkUser sparkUser, string siteLocation)
+        {
+            StringBuilder sb = new StringBuilder();
+            #region HTML Schema
+            /*
+                <tr>
+                    <th scope='row' class='check-column'><input onClick="siteSelectionChanged(12091853); uncheckSelectAll();" name="cbs_12091853" id="cbs_12091853" type="checkbox"></th>
+                    <th scope='row' class='column-sitetype'><img src="images/site_types/general-32.png" title="General" alt="General"></th>
+                    <td class="column-siteinfo"><div class="siteTitle"><a href="#" title="Click to expand/minimize individual Pages">wikipedia.org</a></div>
+                        <table border="0" cellpadding="0" cellspacing="0">
+                            <tbody>
+                                <tr>
+                                    <td class="column-domain">This domain has [7] accepted Pages within your topic</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="explorer_text">
+                                        <ul>
+                                            <li><img src="images/site_types/general-16.png" title="General" alt="General">&nbsp;<img src="images/icons/circle_grey.png" title="Page Sentiment Is Neutral">&nbsp;<a href="topicExplorerDetail.html" title="View Details">Elena Kagan - Personal life and education</a>&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12091853);" title="Delete Page">&lt;-displays on hover only</li>
+                                            <li><img src="images/site_types/general-16.png" title="General" alt="General">&nbsp;<img src="images/icons/circle_grey.png" title="Page Sentiment Is Neutral">&nbsp;<a href="#" title="View Details">Elena Kagan - Early Legal and academic career</a>&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12091853);" title="Delete Page"></li>
+                                            <li><img src="images/site_types/general-16.png" title="General" alt="General">&nbsp;<img src="images/icons/circle_grey.png" title="Page Sentiment Is Neutral">&nbsp;<a href="#" title="View Details">Elena Kagan - White House and judicial nomination</a>&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12091853);" title="Delete Page"></li>
+                                            <li><img src="images/site_types/general-16.png" title="General" alt="General">&nbsp;<img src="images/icons/circle_grey.png" title="Page Sentiment Is Neutral">&nbsp;<a href="#" title="View Details">Elena Kagan - Return to academia</a>&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12091853);" title="Delete Page"></li>
+                                            <li><img src="images/site_types/general-16.png" title="General" alt="General">&nbsp;<img src="images/icons/circle_grey.png" title="Page Sentiment Is Neutral">&nbsp;<a href="#" title="View Details">Elena Kagan - Solicitor General</a>&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12091853);" title="Delete Page"></li>
+                                            <li><img src="images/site_types/general-16.png" title="General" alt="General">&nbsp;<img src="images/icons/circle_grey.png" title="Page Sentiment Is Neutral">&nbsp;<a href="#" title="View Details">Elena Kagan - Indefinite detention without trial</a>&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12091853);" title="Delete Page"></li>
+                                            <li><img src="images/site_types/general-16.png" title="General" alt="General">&nbsp;<img src="images/icons/circle_grey.png" title="Page Sentiment Is Neutral">&nbsp;<a href="#" title="View Details">Elena Kagan - Supreme Court nomination</a>&nbsp;<img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12091853);" title="Delete Page"></li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                    <th scope="row" class="column-options">
+                        <p><img src="images/actions/favorite.png" style="cursor: pointer;" onClick="favoriteSite(12091853);" title="Favorite Page"></p>
+                        <p><img src="images/icons/tasks.png" style="cursor: pointer;" onClick="#" title="Add A Note/Task" height="16" weight="16"></p>
+                        <p><img src="images/actions/edit.png" style="cursor: pointer;" onClick="editSite(12091853);" title="Edit Page"></p>
+                        <p><img src="images/actions/delete.png" style="cursor: pointer;" onClick="deleteSite(12091853);" title="Delete Page"></p>
+                    </th>
+                </tr>
+            */
+            #endregion
+            string authorName = row["AuthorName"].ToString();
+            string authorID = row["authorID"].ToString();
+            string st = "general";
+            string stTitle = "General";
+
+            sb.Append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" class=\"gadget_space\">");
+            sb.Append("<tbody>");
+            sb.Append("<tr>");
+            sb.Append("<th scope='row' class='check-column'>&nbsp;</th>");
+            sb.Append("<td class=\"column-siteinfo\"><div class=\"siteTitle\">");
+            sb.Append(authorName + "</div>");
+
+            sb.Append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+            sb.Append("<tbody>");
+            sb.Append("<tr>");
+            sb.Append("<td class=\"column-domain\">[" + row["PageTotals"].ToString() + "] authors have been identified within your topic</td>");
+            sb.Append("</tr>");
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+            sb.Append("</td>");
+            sb.Append("<th scope=\"row\" class=\"column-options\">&nbsp;</th>");
+            sb.Append("</tr>");
+            sb.Append("</tbody>");
+            sb.Append("</table>");
+            return sb.ToString();
+        }
+        #endregion
+
+        #region SelectAllSites
+        public DataSet SelectAllSites(Guid domainID, int insightID)
+        {
+            return _site.SelectAllSites(domainID, insightID);
+        }
+        #endregion
+
+        #region Select
+        public DataSet Select(string pageList, int excerptSentimentID)
+        {
+            DataTable dt = new DataTable();
+            dt.Columns.Add("SiteID");
+            string[] list = pageList.Split(',');
+            for (int i = 0; i < list.Length; i++)
+            {
+                DataRow row = dt.NewRow();
+                row["SiteID"] = list[i];
+                dt.Rows.Add(row);
+            }
+            return _site.Select(dt, excerptSentimentID);
+        }
+        #endregion
+
+        #region SelectSingle
+        public void SelectSingle(string pageList)
+        {
+            DataTable dt = new DataTable();
+            dt.Columns.Add("SiteID");
+            string[] list = pageList.Split(',');
+            for (int i = 0; i < list.Length; i++)
+            {
+                DataRow row = dt.NewRow();
+                row["SiteID"] = list[i];
+                dt.Rows.Add(row);
+            }
+            DataSet ds = _site.Select(dt, 0);
+            if (ds.Tables.Count > 0)
+            {
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    DataRow row = ds.Tables[0].Rows[0];
+                    _pageID = row["SiteID"].ToInt() ?? 0;
+                    _sentimentID = row["SentimentID"].ToInt() ?? 0;
+                    _sentimentPositiveID = row["SentimentPositive"].ToInt() ?? 0;
+                    _sentimentNegativeID = row["SentimentNegative"].ToInt() ?? 0;
+                    _siteTypeID = row["SiteTypeID"].ToInt() ?? 0;
+                    if (!row.IsNull("DatePosted"))
+                    {
+                        _datePosted = Convert.ToDateTime(row["DatePosted"]);
+                    }
+                    _title = row["Title"].ToString();
+                    _url = row["URL"].ToString();
+                    _summary = row["Extra"].ToString();
+                    Boolean.TryParse(row["ManualProcess"].ToString(), out _manualProcess);
+                }
+            }
+        }
+        #endregion
+
+        #region SelectInbound
+        public DataSet SelectInbound(int topicID, int pageID)
+        {
+            return _site.SelectInbound(topicID, pageID);
+        }
+        #endregion
+
+        #region SelectOutbound
+        public DataSet SelectOutbound(int topicID, int pageID)
+        {
+            return _site.SelectOutbound(topicID, pageID);
+        }
+        #endregion
+
+        #region SelectAllTags
+        public DataSet SelectAllTags(int pageID)
+        {
+            return _site.SelectAllTags(pageID);
+        }
+        #endregion
+
+        #region SiteInformationXMLParser
+        public string SiteInformationXMLParser(string xml, double pageConfidenceLevel, bool addManualRSS)
+        {
+            /*
+                <?xml version="1.0" encoding="UTF-8" ?>
+                <siteinfo id="">
+	                <word count=""></word>
+	                <link type=""></link>
+	                <author>
+		                <name></name>
+		                <nick></nick>
+		                <email></email>
+		                <profile></profile>
+		                <location></location>
+		                <sex></sex>
+		                <age></age>
+		                <avatar></avatar>
+	                </author>
+                </siteinfo> 
+            */
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(xml);
+            StringBuilder message = new StringBuilder();
+            BLL.Page page = new BLL.Page(_db_connection);
+            try
+            {
+                int siteID = 0;
+                Int32.TryParse(doc.SelectSingleNode("/siteinfo").Attributes["id"].Value, out siteID);
+                page.SelectSingle(siteID.ToString());
+                message.AppendLine("Process Site " + siteID.ToString());
+
+                #region Link Insertion
+                XmlNodeList links = doc.SelectNodes("/siteinfo/link");
+                ArrayList al_Link = new ArrayList();
+                DataTable dtLink = new DataTable();
+                dtLink.Columns.Add("URLFrom");
+                dtLink.Columns.Add("URLTo");
+
+                DataTable dtRSSFeed = new DataTable();
+                dtRSSFeed.Columns.Add("URL");
+                dtRSSFeed.Columns.Add("SiteTypeID");
+
+                foreach (XmlNode node in links)
+                {
+                    string lurl = node.InnerText;
+                    string type = node.Attributes["type"].Value;
+                    if (!al_Link.Contains(lurl))
+                    {
+                        al_Link.Add(lurl);
+                        DataRow row = dtLink.NewRow();
+                        bool addLink = false;
+
+                        try
+                        {
+                            switch (type.ToLower())
+                            {
+                                case "anchor":
+                                case "form action":
+                                    addLink = true;
+                                    break;
+                                case "feed":
+                                    if (_manualProcess)        // Manual Node Insertion
+                                    {
+                                        if (addManualRSS)
+                                        {
+                                            DataRow rowFeed = dtRSSFeed.NewRow();
+                                            rowFeed["URL"] = lurl;
+                                            rowFeed["SiteTypeID"] = page.SiteTypeID;
+
+                                            dtRSSFeed.Rows.Add(rowFeed);
+                                        }
+                                    }
+
+                                    break;
+                            }
+                        }
+                        catch(Exception ex) { Logger.Warn(ex); }
+
+
+                        if (addLink)
+                        {
+                            if (page.URL != lurl)
+                            {
+                                row["URLFrom"] = page.URL;
+                                row["URLTo"] = lurl;
+                                dtLink.Rows.Add(row);
+                            }
+                        }
+                    }
+                }
+                if (dtLink.Rows.Count > 0)
+                {
+                    _site.InsertLinkHash(dtLink);
+                    message.AppendLine("Adding " + dtLink.Rows.Count.ToString() + " links\r\n");
+                }
+
+                // Save Manually accepted site-based RSS feeds to db
+                #region Save RSS Feeds
+                if (addManualRSS)
+                {
+                    if (dtRSSFeed.Rows.Count > 0)
+                    {
+                        message.AppendLine("Inserting " + dtRSSFeed.Rows.Count.ToString() + " new RSS Feed URLs into the Feeds Table\r\n");
+                        RSS rss = new RSS(_db_connection);
+                        rss.InsertFeeds(dtRSSFeed);
+                    }
+                }
+                #endregion
+
+                #endregion
+
+                // Grab the words and save those off for the site to the DB
+                #region Words Insertion
+                try
+                {
+                    XmlNode cNode = doc.SelectSingleNode("/siteinfo/content");
+                    if (cNode != null)
+                    {
+                        message.AppendLine("Content Block is present!\r\n");
+                        string content = cNode.InnerText;
+                        // SiteID, ContentBlock
+                        DataTable dtWord = new DataTable();
+                        dtWord.Columns.Add("SiteID");
+                        dtWord.Columns.Add("Word");
+                        dtWord.Columns.Add("SingleWordCount");
+                        ArrayList alWords = new ArrayList();
+
+                        if (content.Length > 0)
+                        {
+                            Hashtable htWords = ContentBlockParser.Parse(content);
+                            int cnt = 0;
+                            foreach (string word in htWords.Keys)
+                            {
+                                // Only insert around 200 words at a time
+                                if (cnt >= 200)
+                                {
+                                    if (dtWord.Rows.Count > 0)
+                                    {
+                                        page.SemanticWordInsert(siteID, dtWord);
+                                        message.AppendLine("Adding " + dtWord.Rows.Count.ToString() + " words\r\n");
+                                    }
+                                    dtWord.Rows.Clear();
+                                    cnt = 0;
+                                }
+
+                                DataRow wrow = dtWord.NewRow();
+                                wrow["SiteID"] = siteID;
+
+                                wrow["Word"] = word;
+                                wrow["SingleWordCount"] = htWords[word].ToInt() ?? 0;
+                                dtWord.Rows.Add(wrow);
+                                cnt++;
+                            }
+                            htWords.Clear();
+                        }
+
+                        if (dtWord.Rows.Count > 0)
+                        {
+                            page.SemanticWordInsert(siteID, dtWord);
+                            message.AppendLine("Adding " + dtWord.Rows.Count.ToString() + " words\r\n");
+                        }
+
+                        dtWord.Rows.Clear();
+                        alWords.Clear();
+                    }
+                }
+                catch(Exception ex) { Logger.Warn(ex); }
+                #endregion
+
+                // Grab the authors and save those off for the site to the DB
+                #region Author Extraction
+                if (siteID > 0)
+                {
+                    XmlNodeList authors = doc.SelectNodes("/siteinfo/author");
+                    if (authors.Count > 0)
+                    {
+                        DAL.Author auth = new DAL.Author(_db_connection);
+
+                        AuthorData ad = new AuthorData();
+                        ArrayList auth_list = new ArrayList();
+                        foreach (XmlNode node in authors)
+                        {
+                            AuthorData.AuthorRow row = ad.Author.NewAuthorRow();
+
+                            XmlNode nna = node.SelectSingleNode("name");
+                            XmlNode nni = node.SelectSingleNode("nick");
+                            XmlNode nem = node.SelectSingleNode("email");
+                            XmlNode npr = node.SelectSingleNode("profile");
+                            XmlNode nlo = node.SelectSingleNode("location");
+                            XmlNode nse = node.SelectSingleNode("sex");
+                            XmlNode nag = node.SelectSingleNode("age");
+                            XmlNode nav = node.SelectSingleNode("avatar");
+
+                            if (nna != null)
+                            {
+                                row.Name = nna.InnerText.Trim();
+                            }
+
+                            if (nni != null)
+                            {
+                                row.Nickname = nni.InnerText.Trim();
+                            }
+
+                            if (nem != null)
+                            {
+                                row.Email = nem.InnerText.Trim();
+                            }
+
+                            if (npr != null)
+                            {
+                                row.Profile = npr.InnerText.Trim();
+                            }
+
+                            if (nlo != null)
+                            {
+                                row.Location = nlo.InnerText.Trim();
+                            }
+
+                            if (nse != null)
+                            {
+                                row.Sex = nse.InnerText.Trim();
+                            }
+
+                            if (nag != null)
+                            {
+                                row.Age = nag.InnerText.Trim();
+                            }
+
+                            if (nav != null)
+                            {
+                                row.Avatar = nav.InnerText.Trim();
+                            }
+
+                            row.SiteID = siteID;
+
+                            if (row.Name == null && row.Nickname != null)
+                            {
+                                row.Name = row.Nickname;
+                            }
+
+                            if (row.Name != null && row.Name != string.Empty && row.Name.Length >= 3)
+                            {
+                                if (!auth_list.Contains(row.Name))
+                                {
+                                    auth_list.Add(row.Name);
+                                    ad.Author.Rows.Add(row);
+                                }
+                            }
+                        }
+
+                        if (ad.Author.Rows.Count > 0)
+                        {
+                            auth.BulkInsert(ad.Author);
+                            message.AppendLine("Inserting Authors [" + ad.Author.Rows.Count.ToString() + "]\r\n");
+                        }
+                    }
+                }
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                message.AppendLine("PROCESS EXCEPTION: " + ex.ToString() + "\r\n");
+                Logger.Log(_db_connection, 0, (int)Enums.ActivityTypes.Error, (int)Enums.TargetTypes.Semantic, 0, string.Empty, this.GetType().Assembly.FullName + "/Page/ParseSemantic_Site", ex.Message);
+            }
+            message.AppendLine("---------------------------------------------------------\r\n");
+            return message.ToString();
+        }
+        #endregion
+
+        #region SiteExerptXMLParser
+        public string SiteExerptXMLParser(string xml, double excerptConfidenceLevel)
+        {
+            /*
+                <?xml version="1.0" encoding="UTF-8" ?>
+                <excerpts id="">
+	                <excerpt confidence="" sentiment=""><![CDATA[EXCERPT CHUNK HERE!]]></excerpt>
+                </excerpts>
+            */
+
+            Conversation convo = new Conversation(_db_connection);
+            DataTable dtConvo = new DataTable("Conversation");
+            dtConvo.Columns.Add("SiteID");
+            dtConvo.Columns.Add("SentimentID");
+            dtConvo.Columns.Add("Text");
+            dtConvo.Columns.Add("SentimentConfidence");
+
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(xml);
+            StringBuilder message = new StringBuilder();
+            try
+            {
+                int siteID = 0;
+                Int32.TryParse(doc.SelectSingleNode("/excerpts").Attributes["id"].Value, out siteID);
+                XmlNodeList nodes = doc.SelectNodes("/excerpts/excerpt");
+                message.AppendLine("Processing "+nodes.Count.ToString()+" Sentiment Blocks for site " + siteID.ToString());
+                if (siteID > 0)
+                {
+                    foreach (XmlNode node in nodes)
+                    {
+                        string text = string.Empty;
+                        double conf = 0.0;
+                        Double.TryParse(node.Attributes["confidence"].Value, out conf);
+                        if (conf >= excerptConfidenceLevel)
+                        {
+                            int sentiment = 0;
+                            Int32.TryParse(node.Attributes["sentiment"].Value, out sentiment);
+                            text = node.InnerText;
+                            bool sentNeutral;
+
+                            if (sentiment == -1)
+                            {
+                                sentNeutral = true;
+                            }
+                            else if (sentiment == 0)
+                            {
+                                sentNeutral = true;
+                            }
+                            else if (sentiment == 1)
+                            {
+                                sentNeutral = true;
+                            }
+                            else
+                            {
+                                sentNeutral = false;
+                            }
+
+                            if (sentNeutral != true  && text != string.Empty)
+                            {
+                                DataRow row = dtConvo.NewRow();
+                                row["Text"] = text;
+                                row["SiteID"] = siteID;
+                                row["SentimentID"] = sentiment;
+                                row["SentimentConfidence"] = conf;
+                                dtConvo.Rows.Add(row);
+                            }
+                        }
+                    }
+
+                    if (dtConvo.Rows.Count > 0)
+                    {
+                        convo.BulkInsert(dtConvo);
+                        message.AppendLine("Inserting " + dtConvo.Rows.Count.ToString() + " Sentiment Blocks for site " + siteID.ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                message.AppendLine("PROCESS EXCEPTION: " + ex.ToString());
+                Logger.Log(_db_connection, 0, (int)Enums.ActivityTypes.Error, (int)Enums.TargetTypes.Semantic, 0, string.Empty, this.GetType().Assembly.FullName + "/Page/ParseSemantic_Site", ex.Message);
+            }
+            message.AppendLine("---------------------------------------------------------");
+            return message.ToString();
+        }
+        #endregion
+
+        #region SetFavorite
+        public void SetFavorite(int pageID)
+        {
+            _site.SetFavorite(pageID);
+        }
+
+        public void SetFavorite(int pageID, bool favorite)
+        {
+            _site.SetFavorite(pageID);
+        }
+        #endregion
+
+        #region Delete
+        public void Delete(string pageList)
+        {
+            string[] pl = pageList.Split(',');
+            DataTable pages = new DataTable();
+            pages.Columns.Add("SiteID");
+            for (int i = 0; i < pl.Length; i++)
+            {
+                DataRow row = pages.NewRow();
+                row["SiteID"] = pl[i];
+                pages.Rows.Add(row);
+            }
+            _site.Delete(pages);
+        }
+        #endregion
+
+        #region Save
+
+        public static void Save(Guid pageID, Guid domainID, string title, string url, string summary, DateTime dateCreated)
+        {
+            System.Data.SqlClient.SqlParameter[] psp = new System.Data.SqlClient.SqlParameter[] 
+            {
+                new System.Data.SqlClient.SqlParameter("@PageID", pageID),
+                new System.Data.SqlClient.SqlParameter("@DomainID", domainID),
+                new System.Data.SqlClient.SqlParameter("@Title", title),
+                new System.Data.SqlClient.SqlParameter("@URL", url),
+                new System.Data.SqlClient.SqlParameter("@Summary", summary),
+                new System.Data.SqlClient.SqlParameter("@DateCreated", dateCreated)
+            };
+            SqlHelper.ExecuteNonQuery("PageMerge", psp, CommandType.StoredProcedure);
+        }
+
+        #endregion
+
+        #region Insert
+        public int Insert(int siteTypeID, int topicID, string title, string url, string extra, DateTime datePosted, int queryID, bool isFavorite, int sentimentID)
+        {
+            if (url.EndsWith("/"))
+            {
+                url = url.Remove(url.Length - 1);
+            }
+
+            Spiral16.SAS.DAL.Domain domain = new Spiral16.SAS.DAL.Domain(_db_connection);
+            Uri uri = new Uri(HttpUtility.UrlDecode(url));
+            string dom = uri.Host;
+            dom = dom.Replace("www.", string.Empty);
+            string domainID = domain.Insert(dom);
+            if (domainID != string.Empty && domainID != "0")
+            {
+                return _site.Insert(siteTypeID, topicID, title, url, extra, datePosted, queryID, isFavorite, sentimentID, domainID);
+            }
+            return 0;
+        }
+        #endregion
+
+        #region Update
+        public void Update(Page page, int pageID, int siteTypeID, DateTime datePosted, int sentimentID)
+        { 
+            _site.Update(page, pageID, siteTypeID, datePosted, sentimentID);
+        }
+        #endregion
+
+        #region BulkUpdate
+        public void BulkUpdate(string pageList, int siteTypeID, DateTime datePosted, int sentimentID, int tagID)
+        {
+            if ((datePosted.Date == DateTime.MinValue.Date) && (siteTypeID == 0) && (sentimentID == 0) && (tagID == 0))
+            {
+                // Do Nothing
+            }
+            else
+            {
+                string[] pl = pageList.Split(',');
+                DataTable pages = new DataTable();
+                pages.Columns.Add("SiteID");
+                for (int i = 0; i < pl.Length; i++)
+                {
+                    DataRow row = pages.NewRow();
+                    row["SiteID"] = pl[i];
+                    pages.Rows.Add(row);
+                }
+                _site.BulkUpdate(pages, siteTypeID, datePosted, sentimentID, tagID);
+            }
+        }
+        #endregion
+
+        #region AddTags
+        public void AddTags(int topicID, int pageID, string tags, string new_tags)
+        {
+            DataTable tagIDs = new DataTable();
+            tagIDs.Columns.Add("TagID");
+
+            DataTable tagNames = new DataTable();
+            tagNames.Columns.Add("Tag");
+
+            string[] tgs = tags.Split(',');
+            for (int i = 0; i < tgs.Length; i++)
+            {
+                DataRow row = tagIDs.NewRow();
+                row["TagID"] = tgs[i];
+                tagIDs.Rows.Add(row);
+            }
+
+            string[] tgns = new_tags.Split(',');
+            for (int i = 0; i < tgns.Length; i++)
+            {
+                DataRow row = tagNames.NewRow();
+                row["Tag"] = tgns[i];
+                tagNames.Rows.Add(row);
+            }
+
+            _site.AddTags(topicID, pageID, tagNames, tagIDs);
+        }
+        #endregion
+
+        #region SemanticWordInsert
+        public void SemanticWordInsert(int siteID, DataTable dtData)
+        {
+            _site.SemanticWordInsert(siteID, dtData);
+        }
+        #endregion
+    }
+}
