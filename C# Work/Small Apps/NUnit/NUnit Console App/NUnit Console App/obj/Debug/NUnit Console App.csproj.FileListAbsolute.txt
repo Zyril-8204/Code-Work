@@ -1,0 +1,8 @@
+D:\Tutorials\NUnit\NUnit Console App\NUnit Console App\bin\Debug\NUnit Console App.exe.config
+D:\Tutorials\NUnit\NUnit Console App\NUnit Console App\obj\Debug\NUnit Console App.csprojResolveAssemblyReference.cache
+D:\Tutorials\NUnit\NUnit Console App\NUnit Console App\bin\Debug\NUnit Console App.exe
+D:\Tutorials\NUnit\NUnit Console App\NUnit Console App\bin\Debug\NUnit Console App.pdb
+D:\Tutorials\NUnit\NUnit Console App\NUnit Console App\bin\Debug\nunit.framework.dll
+D:\Tutorials\NUnit\NUnit Console App\NUnit Console App\bin\Debug\nunit.framework.xml
+D:\Tutorials\NUnit\NUnit Console App\NUnit Console App\obj\Debug\NUnit Console App.exe
+D:\Tutorials\NUnit\NUnit Console App\NUnit Console App\obj\Debug\NUnit Console App.pdb

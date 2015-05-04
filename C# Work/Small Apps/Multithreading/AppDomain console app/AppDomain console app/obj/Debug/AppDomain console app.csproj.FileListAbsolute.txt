@@ -1,0 +1,6 @@
+D:\Tutorials\Multithreading\AppDomain console app\AppDomain console app\bin\Debug\AppDomain console app.exe.config
+D:\Tutorials\Multithreading\AppDomain console app\AppDomain console app\bin\Debug\AppDomain console app.exe
+D:\Tutorials\Multithreading\AppDomain console app\AppDomain console app\bin\Debug\AppDomain console app.pdb
+D:\Tutorials\Multithreading\AppDomain console app\AppDomain console app\obj\Debug\AppDomain console app.csprojResolveAssemblyReference.cache
+D:\Tutorials\Multithreading\AppDomain console app\AppDomain console app\obj\Debug\AppDomain console app.exe
+D:\Tutorials\Multithreading\AppDomain console app\AppDomain console app\obj\Debug\AppDomain console app.pdb
