@@ -1,0 +1,15 @@
+﻿<form ng-submit="login()">
+    @Html.AntiForgeryToken()
+    <label for="emailAddress">Emial Address:</label>
+    <input type="text" ng-model="loginForm.emailAddress" id="emailAddress" required />
+
+    <label for="password">Password:</label>
+    <input type="password" ng-model="loginForm.password" id="password" required />
+
+    <button type="submit">Login</button>
+
+</form>
+
+<div ng-if="loginForm.loginFailure">
+    Login Failed
+</div>

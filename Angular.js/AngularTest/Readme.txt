@@ -1,0 +1,1 @@
+This is a simple website that has custom routing through angular built in MVC style format.

@@ -1,0 +1,12 @@
+﻿<form ng-submit="register()">
+    <label for="emailAddress">Email Address:</label>
+    <input type="text" ng-model="registerForm.emailAddress" id="emailAddress" required />
+
+    <label for="password">Password:</label>
+    <input type="password" ng-model="registerForm.password" id="password" required />
+
+    <label for="confirmPassword">Confirm Passwod</label>
+    <input type="password" ng-model"registerForm.confirmPassword" id="confirmPassword" required />
+
+    <button type="submit">Register</button>
+</form>
