@@ -1,0 +1,76 @@
+﻿
+CREATE TABLE [dbo].[Users](
+	[Id] [int] IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	[Username] [nvarchar](15) NOT NULL,
+	[Password] [nvarchar](max) NOT NULL,
+	[Role] [nvarchar](25) NOT NULL,
+	[Email] [nvarchar](100) NOT NULL,
+	[Name] [nvarchar](50) NOT NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[CreatedBy] [nvarchar](15) NOT NULL,
+);
+
+
+CREATE TABLE [dbo].[Articles](
+	[Id] [int] IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	[IsClientArticle] [bit] NOT NULL,
+	[Title] [nvarchar](120) NOT NULL,
+	[Summary] [nvarchar](500) NOT NULL,
+	[Content] [nvarchar](max) NOT NULL,
+	[CreatedByName] [nvarchar](50) NOT NULL,
+	[LastEditedByName] [nvarchar](50) NOT NULL,
+	[CreatedByID] [int] NOT NULL,
+	[LastEditedByID] [int] NOT NULL,
+	[CreatedOn] [datetime] NOT NULL,
+	[LastEditedOn] [datetime] NOT NULL,
+	[Tag] [nvarchar](max) NOT NULL,
+	[UserId] [int] NOT NULL,
+	FOREIGN KEY (UserId) REFERENCES Users(Id) 
+		ON DELETE NO ACTION
+	);
+
+CREATE TABLE [dbo].[ArticlesWaitingForApporval](
+	[Id] [int] IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	[IsClientArticle] [bit] NOT NULL,
+	[Title] [nvarchar](120) NOT NULL,
+	[Summary] [nvarchar](500) NOT NULL,
+	[Content] [nvarchar](max) NOT NULL,
+	[CreatedByName] [nvarchar](50) NOT NULL,
+	[LastEditedByName] [nvarchar](50) NOT NULL,
+	[CreatedByID] [int] NOT NULL,
+	[LastEditedByID] [int] NOT NULL,
+	[CreatedOn] [datetime] NOT NULL,
+	[LastEditedOn] [datetime] NOT NULL,
+	[Tag] [nvarchar](max) NOT NULL,
+	[UserId] [int] NOT NULL,
+	[OriginalArticleId] [int] NULL,
+	FOREIGN KEY (UserId) REFERENCES Users(Id) 
+		ON DELETE NO ACTION,
+	FOREIGN KEY (OriginalArticleId) REFERENCES Articles(Id)
+	    ON DELETE NO ACTION
+	);
+
+CREATE TABLE [dbo].[ArticlesUserViewed](
+	[Id] [int] IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	[UserId] [int] NOT NULL,
+	[ArticleId] [int] NOT NULL,
+	[Tag] [nvarchar](max) NOT NULL,
+	[DateViewed] [date] NOT NULL,
+	FOREIGN KEY (UserId) REFERENCES Users(Id) 
+		ON DELETE NO ACTION,
+	FOREIGN KEY (ArticleId) REFERENCES Articles(Id) 
+		ON DELETE NO ACTION
+);
+
+
+CREATE TABLE [dbo].[Tags](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](50) NOT NULL,
+	[Description] [nvarchar](max) NOT NULL,
+	[ArticleId] [int] NULL,
+	[ArticlesWaitingForApporvalId] [int] NULL,
+	FOREIGN KEY (ArticleId) REFERENCES Articles(Id) 
+		ON DELETE NO ACTION,
+	FOREIGN KEY (ArticlesWaitingForApporvalId) REFERENCES Articles(Id) 
+		ON DELETE NO ACTION
+);

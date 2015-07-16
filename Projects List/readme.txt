@@ -1,0 +1,1 @@
+This is an area to see each project I’ve worked on at each company in my professional history, some companies have allowed code snips some have not. It is noted that the company denied access to code snips in each respective folder.
