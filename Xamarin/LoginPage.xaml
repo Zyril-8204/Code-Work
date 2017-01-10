@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<!--  ReSharper disable once InconsistentNaming  -->
+<pages:GenericPage x:Class="XamarinApp.Pages.LogInPage"
+                   xmlns="http://xamarin.com/schemas/2014/forms"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                   xmlns:controls="clr-namespace:XamarinApp.Controls;assembly=XamarinApp"
+                   xmlns:converters="clr-namespace:XamarinApp.Converters;assembly=XamarinApp"
+                   xmlns:pages="clr-namespace:XamarinApp.Pages;assembly=XamarinApp"
+                   x:Name="this">
+  <!--  We have to bind to ourselves to get the UI binded behaviors  -->
+  <!--  Therefore we have to reference everything through AppVM  -->
+  <!--  BindingContext="{x:Reference this}"  -->
+  <ContentPage.Resources>
+    <ResourceDictionary>
+      <converters:TimesxConverter x:Key="TimesxConverter" />
+
+    </ResourceDictionary>
+  </ContentPage.Resources>
+
+  <Grid HorizontalOptions="Fill" BackgroundColor="{StaticResource BackgroundTopColor}">
+
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="3*" />
+      <RowDefinition Height="2*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <!--  #Region Background colors  -->
+    <Grid Grid.Row="0"
+          Grid.RowSpan="2"
+          BackgroundColor="{StaticResource BackgroundTopColor}" />
+    <Grid Grid.Row="2"
+          Grid.RowSpan="2"
+          BackgroundColor="{StaticResource BackgroundBottomColor}" />
+    <!--  #EndRegion Background colors  -->
+
+    <controls:PfPageHeaderControl Grid.Row="0" Grid.Column="0" />
+    <!--#region Workspace-->
+    <Grid Grid.Row="1"
+          Grid.RowSpan="2"
+          Grid.Column="0"
+          VerticalOptions="Start">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*" />
+        <RowDefinition Height="*" />
+        <RowDefinition Height="*" />
+        <RowDefinition Height="*" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="10" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="3*" />
+        <ColumnDefinition Width="10" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="10" />
+      </Grid.ColumnDefinitions>
+      <!--#region  Column 1 Labels-->
+      <Label Grid.Row="1"
+             Grid.Column="1"
+             HorizontalOptions="End"
+             Text="USERNAME"
+             VerticalOptions="Center"
+             XAlign="Center"
+             YAlign="Center"
+             Style="{StaticResource LabelStyleTagMed}" />
+
+      <Label Grid.Row="2"
+             Grid.Column="1"
+             HorizontalOptions="End"
+             Text="PASSWORD"
+             VerticalOptions="Center"
+             XAlign="Center"
+             YAlign="Center"
+             Style="{StaticResource LabelStyleTagMed}" />
+      <!--#endregion Column 1 Lables-->
+
+      <!--  #Region Column 2 Entry boxes  -->
+      <!--#region Entry Username-->
+
+      <ContentView Grid.Row="1" Grid.Column="2">
+        <OnPlatform x:TypeArguments="View">
+          <OnPlatform.iOS>
+            <Entry x:Name="EntName"
+                   HeightRequest="{Binding Path=FontSize,
+                                                       Source={x:Reference EntName},
+                                                       Converter={StaticResource TimesxConverter},
+                                                       ConverterParameter=1.25}"
+                   Completed="EntName_OnCompleted"
+                   Placeholder="Employee Number"
+                   Text="{Binding AppVM.EnteredLogInName}"
+                   VerticalOptions="Start"
+                   Style="{StaticResource EntryStyleLrg}" />
+          </OnPlatform.iOS>
+          <OnPlatform.Android>
+            <Entry Completed="EntName_OnCompleted"
+                   Placeholder="Employee Number"
+                   Text="{Binding AppVM.EnteredLogInName}"
+                   VerticalOptions="Start"
+                   Style="{StaticResource EntryStyleLrg}" />
+          </OnPlatform.Android>
+          <OnPlatform.WinPhone>
+            <Entry Completed="EntName_OnCompleted"
+                   Placeholder="Employee Number"
+                   Text="{Binding AppVM.EnteredLogInName}"
+                   VerticalOptions="Start"
+                   Style="{StaticResource EntryStyleLrg}" />
+          </OnPlatform.WinPhone>
+
+        </OnPlatform>
+      </ContentView>
+      <!--#endregion Entry Username-->
+
+      <!--#region Entry Password-->
+      <ContentView Grid.Row="2" Grid.Column="2">
+        <OnPlatform x:TypeArguments="View">
+          <OnPlatform.iOS>
+            <Entry x:Name="EntPassword"
+                   HeightRequest="{Binding Path=FontSize,
+                                                       Source={x:Reference EntName},
+                                                       Converter={StaticResource TimesxConverter},
+                                                       ConverterParameter=1.25}"
+                   Completed="EntPassword_OnCompleted"
+                   IsPassword="True"
+                   Placeholder="Driver Code"
+                   Text="{Binding AppVM.EnteredLogInPassword}"
+                   VerticalOptions="Start"
+                   Style="{StaticResource EntryStyleLrg}" />
+          </OnPlatform.iOS>
+          <OnPlatform.Android>
+            <Entry x:Name="EntPasswordDroid"
+                   Completed="EntPassword_OnCompleted"
+                   IsPassword="True"
+                   Placeholder="Driver Code"
+                   Text="{Binding AppVM.EnteredLogInPassword}"
+                   VerticalOptions="Start"
+                   Style="{StaticResource EntryStyleLrg}" />
+          </OnPlatform.Android>
+          <OnPlatform.WinPhone>
+            <Entry Completed="EntPassword_OnCompleted"
+                   IsPassword="True"
+                   Placeholder="Driver Code"
+                   Text="{Binding AppVM.EnteredLogInPassword}"
+                   VerticalOptions="Start"
+                   Style="{StaticResource EntryStyleLrg}" />
+          </OnPlatform.WinPhone>
+
+        </OnPlatform>
+      </ContentView>
+      <!--#endregion Entry Password-->
+
+      <Button x:Name="BtnSubmit"
+              Grid.Row="3"
+              Grid.Column="2"
+              HorizontalOptions="End"
+              Command="{Binding AppVM.LogInCommand}"
+              Text="LOGIN"
+              VerticalOptions="Center"
+              Style="{StaticResource ButtonStyleLrgRvs}" />
+      <!--  #EndREgion Colmn 2  -->
+
+      <!--  Column 3 is spacing between entry boxes and RecentLogIns listview  -->
+      <!--  #Region  Column 4 Recent logins  -->
+      <Label Grid.Row="0"
+             Grid.Column="4"
+             HorizontalOptions="Center"
+             Text="RECENT LOGINS"
+             Style="{StaticResource LabelStyleTagMed}" />
+
+      <!--  Attempt to replace ListView with vertically oriented ItemView  -->
+      <controls:ItemsView Grid.Row="1"
+                          Grid.RowSpan="3"
+                          Grid.Column="4"
+                          HorizontalOptions="End"
+                          BackgroundColor="Transparent"
+                          ItemsSource="{Binding AppVM.RecentLoginNames}"
+                          Orientation="Vertical"
+                          VerticalOptions="FillAndExpand">
+        <controls:ItemsView.ItemTemplate>
+          <DataTemplate>
+            <!--<StackLayout Orientation="Vertical"
+                                     Spacing="15">-->
+            <Grid BackgroundColor="{StaticResource BlueTextColor}" Padding="0.5">
+              <!--  Because a label doesn't have padding  -->
+              <Label HorizontalOptions="CenterAndExpand"
+                     BackgroundColor="{StaticResource BlueTextColor}"
+                     HorizontalTextAlignment="Center"
+                     Text="{Binding .,
+                                                  Mode=OneWay}"
+                     TextColor="{StaticResource TagForegroundColor}"
+                     VerticalOptions="CenterAndExpand"
+                     VerticalTextAlignment="Center"
+                     XAlign="Center"
+                     YAlign="Center"
+                     Style="{StaticResource LabelStyleLrg}" />
+              <Button HorizontalOptions="CenterAndExpand"
+                      BackgroundColor="Transparent"
+                      Clicked="UserName_Clicked"
+                      Text="{Binding .,
+                                                   Mode=OneWay}"
+                      TextColor="Transparent"
+                      VerticalOptions="CenterAndExpand"
+                      Style="{StaticResource ButtonStyleLrg}" />
+            </Grid>
+            <!--</StackLayout>-->
+          </DataTemplate>
+        </controls:ItemsView.ItemTemplate>
+      </controls:ItemsView>
+
+      <!--  #EndRegion Column 4  -->
+
+    </Grid>
+    <!--  #EndRegion Workspace  -->
+
+
+    <controls:PfPageFooterControl Grid.Row="3"
+                                  Grid.Column="0"
+                                  BackgroundColor="{StaticResource BackgroundBottomColor}" />
+  </Grid>
+</pages:GenericPage>
